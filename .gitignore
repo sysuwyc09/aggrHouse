@@ -1,0 +1,6 @@
+__pycache__/
+.idea/
+.venv/
+结果/
+源文件/
+data/
