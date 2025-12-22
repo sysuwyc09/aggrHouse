@@ -1,6 +1,5 @@
 <RCC>
   <qresource prefix="icons">
-    <file>chart2.jpg</file>
     <file>icons/account.svg</file>
     <file>icons/bell.svg</file>
     <file>icons/black-shades.svg</file>
