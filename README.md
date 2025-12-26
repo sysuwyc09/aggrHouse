@@ -5,7 +5,7 @@ python==3.8.10
 <!-- - 使用前说明 -->
 1. 安装依赖库
 ```
-pip install -r require.txt
+pip install -r requirements.txt
 ```
 2. 创建必须包含的文件夹，用于存放数据库
 ```
