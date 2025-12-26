@@ -18,8 +18,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGridLayout,
     QHBoxLayout, QHeaderView, QLabel, QLayout,
     QLineEdit, QMainWindow, QPushButton, QSizePolicy,
-    QSpacerItem, QStackedWidget, QTableWidget, QTableWidgetItem,
-    QVBoxLayout, QWidget)
+    QSpacerItem, QSpinBox, QStackedWidget, QTableWidget,
+    QTableWidgetItem, QVBoxLayout, QWidget)
 
 from customnWidget import (BarChartView, CircularProgress, PieChartView)
 import resources_rc
@@ -1129,6 +1129,175 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.setStretch(1, 3)
         self.verticalLayout_4.setStretch(2, 5)
         self.stackedWidget.addWidget(self.kpi_page)
+        self.topN_page = QWidget()
+        self.topN_page.setObjectName(u"topN_page")
+        self.verticalLayout_7 = QVBoxLayout(self.topN_page)
+        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.frame = QFrame(self.topN_page)
+        self.frame.setObjectName(u"frame")
+        sizePolicy2.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
+        self.frame.setSizePolicy(sizePolicy2)
+        self.frame.setMinimumSize(QSize(0, 50))
+        self.frame.setMaximumSize(QSize(16777215, 50))
+        self.frame.setFrameShape(QFrame.StyledPanel)
+        self.frame.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_9 = QHBoxLayout(self.frame)
+        self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
+        self.horizontalSpacer_9 = QSpacerItem(498, 17, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_9.addItem(self.horizontalSpacer_9)
+
+        self.label_6 = QLabel(self.frame)
+        self.label_6.setObjectName(u"label_6")
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.label_6.sizePolicy().hasHeightForWidth())
+        self.label_6.setSizePolicy(sizePolicy4)
+        self.label_6.setMinimumSize(QSize(0, 0))
+        self.label_6.setMaximumSize(QSize(16777215, 16777215))
+        self.label_6.setStyleSheet(u"QLabel {\n"
+"\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"}")
+
+        self.horizontalLayout_9.addWidget(self.label_6)
+
+        self.yellow_num_QB = QSpinBox(self.frame)
+        self.yellow_num_QB.setObjectName(u"yellow_num_QB")
+        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Maximum)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.yellow_num_QB.sizePolicy().hasHeightForWidth())
+        self.yellow_num_QB.setSizePolicy(sizePolicy5)
+        self.yellow_num_QB.setMinimumSize(QSize(50, 25))
+        self.yellow_num_QB.setMaximumSize(QSize(50, 25))
+        self.yellow_num_QB.setStyleSheet(u"QSpinBox{\n"
+"	border: 1px solid rgb(85, 170, 255);\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"	border-radius: 5;\n"
+"}\n"
+"")
+        self.yellow_num_QB.setValue(60)
+
+        self.horizontalLayout_9.addWidget(self.yellow_num_QB)
+
+        self.label_7 = QLabel(self.frame)
+        self.label_7.setObjectName(u"label_7")
+        sizePolicy4.setHeightForWidth(self.label_7.sizePolicy().hasHeightForWidth())
+        self.label_7.setSizePolicy(sizePolicy4)
+        self.label_7.setMinimumSize(QSize(0, 0))
+        self.label_7.setMaximumSize(QSize(16777215, 16777215))
+        self.label_7.setStyleSheet(u"QLabel {\n"
+"\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"}")
+
+        self.horizontalLayout_9.addWidget(self.label_7)
+
+        self.red_num_QB = QSpinBox(self.frame)
+        self.red_num_QB.setObjectName(u"red_num_QB")
+        sizePolicy5.setHeightForWidth(self.red_num_QB.sizePolicy().hasHeightForWidth())
+        self.red_num_QB.setSizePolicy(sizePolicy5)
+        self.red_num_QB.setMinimumSize(QSize(50, 25))
+        self.red_num_QB.setMaximumSize(QSize(50, 25))
+        self.red_num_QB.setStyleSheet(u"QSpinBox{\n"
+"	border: 1px solid rgb(85, 170, 255);\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"	border-radius: 5;\n"
+"}\n"
+"")
+        self.red_num_QB.setValue(80)
+
+        self.horizontalLayout_9.addWidget(self.red_num_QB)
+
+        self.search_topN_bt = QPushButton(self.frame)
+        self.search_topN_bt.setObjectName(u"search_topN_bt")
+        sizePolicy6 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy6.setHorizontalStretch(0)
+        sizePolicy6.setVerticalStretch(0)
+        sizePolicy6.setHeightForWidth(self.search_topN_bt.sizePolicy().hasHeightForWidth())
+        self.search_topN_bt.setSizePolicy(sizePolicy6)
+        self.search_topN_bt.setMinimumSize(QSize(100, 25))
+        self.search_topN_bt.setMaximumSize(QSize(100, 25))
+        self.search_topN_bt.setStyleSheet(u"QPushButton {\n"
+"	border: 1px solid rgb(85, 170, 255);\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	border-radius: 11;\n"
+"	color: rgb(0, 170, 255);\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"	background-color: rgb(85, 0, 255);\n"
+"	color: rgb(7, 255, 119);\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"	background-color: rgb(0, 0, 0);\n"
+"}")
+
+        self.horizontalLayout_9.addWidget(self.search_topN_bt)
+
+
+        self.verticalLayout_7.addWidget(self.frame)
+
+        self.topN_tw = QTableWidget(self.topN_page)
+        self.topN_tw.setObjectName(u"topN_tw")
+        self.topN_tw.setStyleSheet(u"QTableWidget {\n"
+"    background-color: #1a1a3a;  /* \u6bd4\u7a97\u4f53\u80cc\u666f\u7a0d\u4eae\uff0c\u5f62\u6210\u5c42\u6b21\u611f */\n"
+"    color: #ffffff;             /* \u767d\u8272\u6587\u5b57\u786e\u4fdd\u53ef\u8bfb\u6027 */\n"
+"    gridline-color: #2a2a4a;    /* \u6df1\u8272\u7f51\u683c\u7ebf\uff0c\u4e0e\u80cc\u666f\u534f\u8c03 */\n"
+"    font-family: \"Microsoft YaHei\", Arial;\n"
+"    font-size: 12px;\n"
+"}\n"
+"QTableWidget::item {\n"
+"    background-color: #1a1a3a;\n"
+"    color: #ffffff;\n"
+"    border: 1px solid #2a2a4a;\n"
+"    padding: 4px;\n"
+"}\n"
+"QTableWidget::item:selected {\n"
+"    background-color: #3a3a5a;  /* \u9009\u4e2d\u9879\u4f7f\u7528\u7a0d\u4eae\u7684\u84dd\u8272 */\n"
+"    color: #ffffff;\n"
+"}\n"
+"QHeaderView::section {\n"
+"    background-color: #252545;  /* \u8868\u5934\u80cc\u666f\u6bd4\u8868\u683c\u7a0d\u4eae */\n"
+"    color: #ffffff;\n"
+"    padding: 6px;\n"
+"    border: 1px solid #2a2a4a;\n"
+"    font-weight: bold;\n"
+"}\n"
+"QScrollBar:vertical {\n"
+"    background-color:"
+                        " #1a1a3a;\n"
+"    width: 10px;\n"
+"}\n"
+"QScrollBar::handle:vertical {\n"
+"    background-color: #4a4a6a;  /* \u6eda\u52a8\u6761\u6ed1\u5757\u989c\u8272 */\n"
+"    border-radius: 5px;\n"
+"}\n"
+"QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {\n"
+"    height: 0px;\n"
+"}\n"
+"QScrollBar:horizontal {\n"
+"    background-color: #1a1a3a;\n"
+"    height: 10px;\n"
+"}\n"
+"QScrollBar::handle:horizontal {\n"
+"    background-color: #4a4a6a;\n"
+"    border-radius: 5px;\n"
+"}\n"
+"QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {\n"
+"    width: 0px;\n"
+"}")
+
+        self.verticalLayout_7.addWidget(self.topN_tw)
+
+        self.stackedWidget.addWidget(self.topN_page)
 
         self.horizontalLayout_3.addWidget(self.stackedWidget)
 
@@ -1144,27 +1313,23 @@ class Ui_MainWindow(object):
         self.bottomBar.setStyleSheet(u"background-color: rgb(13, 9, 36);")
         self.bottomBar.setFrameShape(QFrame.NoFrame)
         self.bottomBar.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_9 = QHBoxLayout(self.bottomBar)
-        self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
+        self.horizontalLayout_6 = QHBoxLayout(self.bottomBar)
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.import_status = QLabel(self.bottomBar)
         self.import_status.setObjectName(u"import_status")
         self.import_status.setStyleSheet(u"QLabel {\n"
 "	color: rgb(0, 170, 255);\n"
 "}")
 
-        self.horizontalLayout_9.addWidget(self.import_status)
+        self.horizontalLayout_6.addWidget(self.import_status)
 
-        self.horizontalLayout_6 = QHBoxLayout()
-        self.horizontalLayout_6.setSpacing(6)
-        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
-        self.horizontalLayout_6.setSizeConstraint(QLayout.SetDefaultConstraint)
         self.home_bt = QPushButton(self.bottomBar)
         self.home_bt.setObjectName(u"home_bt")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-        sizePolicy4.setHorizontalStretch(0)
-        sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.home_bt.sizePolicy().hasHeightForWidth())
-        self.home_bt.setSizePolicy(sizePolicy4)
+        sizePolicy7 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        sizePolicy7.setHorizontalStretch(0)
+        sizePolicy7.setVerticalStretch(0)
+        sizePolicy7.setHeightForWidth(self.home_bt.sizePolicy().hasHeightForWidth())
+        self.home_bt.setSizePolicy(sizePolicy7)
         self.home_bt.setMinimumSize(QSize(100, 26))
         self.home_bt.setMaximumSize(QSize(26, 26))
         self.home_bt.setLayoutDirection(Qt.LeftToRight)
@@ -1190,6 +1355,35 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_6.addWidget(self.home_bt)
 
+        self.topN_bt = QPushButton(self.bottomBar)
+        self.topN_bt.setObjectName(u"topN_bt")
+        sizePolicy7.setHeightForWidth(self.topN_bt.sizePolicy().hasHeightForWidth())
+        self.topN_bt.setSizePolicy(sizePolicy7)
+        self.topN_bt.setMinimumSize(QSize(100, 26))
+        self.topN_bt.setMaximumSize(QSize(26, 26))
+        self.topN_bt.setLayoutDirection(Qt.LeftToRight)
+        self.topN_bt.setStyleSheet(u"QPushButton {\n"
+"	border: none;\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	border-radius: 13;\n"
+"	color: rgb(85, 0, 255);\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"	background-color: rgb(85, 0, 255);\n"
+"	color: rgb(7, 255, 119);\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"	background-color: rgb(0, 0, 0);\n"
+"}")
+        icon6 = QIcon()
+        icon6.addFile(u":/icons/icons/bell.svg", QSize(), QIcon.Normal, QIcon.Off)
+        self.topN_bt.setIcon(icon6)
+        self.topN_bt.setIconSize(QSize(20, 20))
+
+        self.horizontalLayout_6.addWidget(self.topN_bt)
+
         self.kpi_bt = QPushButton(self.bottomBar)
         self.kpi_bt.setObjectName(u"kpi_bt")
         self.kpi_bt.setMinimumSize(QSize(100, 26))
@@ -1209,9 +1403,9 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "	background-color: rgb(0, 0, 0);\n"
 "}")
-        icon6 = QIcon()
-        icon6.addFile(u":/icons/icons/chart.svg", QSize(), QIcon.Normal, QIcon.Off)
-        self.kpi_bt.setIcon(icon6)
+        icon7 = QIcon()
+        icon7.addFile(u":/icons/icons/chart.svg", QSize(), QIcon.Normal, QIcon.Off)
+        self.kpi_bt.setIcon(icon7)
         self.kpi_bt.setIconSize(QSize(20, 20))
 
         self.horizontalLayout_6.addWidget(self.kpi_bt)
@@ -1237,15 +1431,12 @@ class Ui_MainWindow(object):
 "QPushButton:pressed {\n"
 "	background-color: rgb(0, 0, 0);\n"
 "}")
-        icon7 = QIcon()
-        icon7.addFile(u":/icons/icons/download.svg", QSize(), QIcon.Normal, QIcon.Off)
-        self.download_bt.setIcon(icon7)
+        icon8 = QIcon()
+        icon8.addFile(u":/icons/icons/download.svg", QSize(), QIcon.Normal, QIcon.Off)
+        self.download_bt.setIcon(icon8)
         self.download_bt.setIconSize(QSize(20, 20))
 
         self.horizontalLayout_6.addWidget(self.download_bt)
-
-
-        self.horizontalLayout_9.addLayout(self.horizontalLayout_6)
 
 
         self.verticalLayout.addWidget(self.bottomBar)
@@ -1253,6 +1444,9 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
+
+        self.stackedWidget.setCurrentIndex(4)
+
 
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
@@ -1280,8 +1474,12 @@ class Ui_MainWindow(object):
         self.col3_label_3.setText(QCoreApplication.translate("MainWindow", u"--", None))
         self.col3_label_2.setText(QCoreApplication.translate("MainWindow", u"--", None))
         self.query_all_bt.setText(QCoreApplication.translate("MainWindow", u"\u5168\u91cf\u5206\u6790", None))
+        self.label_6.setText(QCoreApplication.translate("MainWindow", u"\u9884\u8b66\u95e8\u9650\u503c\uff08%\uff09\uff1a", None))
+        self.label_7.setText(QCoreApplication.translate("MainWindow", u"\u7d27\u5f20\u95e8\u9650\u503c\uff08%\uff09\uff1a", None))
+        self.search_topN_bt.setText(QCoreApplication.translate("MainWindow", u"\u67e5\u8be2", None))
         self.import_status.setText("")
         self.home_bt.setText(QCoreApplication.translate("MainWindow", u"\u9996\u9875", None))
+        self.topN_bt.setText(QCoreApplication.translate("MainWindow", u"\u9884\u8b66", None))
         self.kpi_bt.setText(QCoreApplication.translate("MainWindow", u"\u7edf\u8ba1\u62a5\u8868", None))
         self.download_bt.setText(QCoreApplication.translate("MainWindow", u"\u5bfc\u51fa", None))
     # retranslateUi

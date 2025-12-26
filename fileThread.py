@@ -21,12 +21,12 @@ class FileImportThread(QThread):
             data = df.values.tolist()
             
             # 发送状态信号
-            self.state_signal.emit("导入成功")
+            self.state_signal.emit("读取成功")
             # 发送结果信号
             self.result_signal.emit(cols, data)
             
         except Exception as e:
-            self.state_signal.emit(f"导入失败: {str(e)}")
+            self.state_signal.emit(f"读取成功: {str(e)}")
             self.result_signal.emit([], [])
 
 
@@ -70,15 +70,12 @@ class writeDataBaseThread(QThread):
                 if self.table_name not in pd.read_sql("SELECT name FROM sqlite_master WHERE type='table';", conn)['name'].values:
                     self.df.to_sql(self.table_name, conn, if_exists='replace', index=False)
                 else:
+                    # 专业替换更新 设备清单
                     existing_df = pd.read_sql(f"SELECT * FROM {self.table_name}", conn)
-                    # merge 匹配 existing_df 不在 self.df的行
-                    temp_df = self.df[['专业', '设备名称']].copy()
-                    temp_df['是否更新'] = '是'
-                    existing_df = existing_df.merge(temp_df, on=['专业', '设备名称'], how='left')
-                    not_existing_df = existing_df[existing_df['是否更新'].isnull()]
-                    not_existing_df.drop(columns=['是否更新'], inplace=True)
-                    # 合并 not_existing_df 到 self.df
-                    self.df = pd.concat([self.df, not_existing_df], ignore_index=True)
+                    major = self.df['专业'].tolist()[0]
+                    # 筛选出专业匹配的行
+                    existing_df = existing_df[existing_df['专业'] != major]
+                    self.df = pd.concat([self.df, existing_df], ignore_index=True)
                     self.df.to_sql(self.table_name, conn, if_exists='replace', index=False)
                     
             conn.commit()
@@ -189,8 +186,10 @@ class queryAllHouseThread(QThread):
     pie_signal = Signal(dict,dict,dict)  # 利用率结果信号
     dataframe_signal = Signal(pd.DataFrame,pd.DataFrame,pd.DataFrame)
 
-    def __init__(self):
+    def __init__(self,yellow_num=60,red_num=80):
         super().__init__()
+        self.yellow_num = yellow_num
+        self.red_num = red_num
     def run(self):
         try:
             self.state_signal.emit("正在查询数据库..")
@@ -213,12 +212,14 @@ class queryAllHouseThread(QThread):
             device_df = device_df.rename(columns={'所属机房':'机房名称'})
             device_df = device_df.merge(house_df[['机房名称']], on='机房名称')
             device_df = device_df.astype('str')
+
             # 垃圾数据清理
             device_df = device_df[device_df['设备型号']!='None']
 
             device_df = device_df[~device_df['生命周期状态'].str.contains('已拆除')]
             device_height_df = pd.read_sql("SELECT * FROM 设备高度", conn)
             device_df = device_df.merge(device_height_df, on=['专业', '设备型号'], how='left')
+
             empty_device_df = device_df[device_df['设备高度'].isnull()]
             # 识别是否有未录入高度设施
             if not empty_device_df.empty:
@@ -242,6 +243,7 @@ class queryAllHouseThread(QThread):
             house_df['已用设施高度'] = house_df['已用设施高度'].fillna(0)
             house_df['利用率'] = round(house_df['已用设施高度'] / house_df['可装设施高度'] * 100, 2)
             house_df['利用率状态'] = house_df['利用率'].apply(self.isUse)
+            house_df = house_df.sort_values(by='利用率', ascending=False)
 
             # 重要汇聚
             important_house_df = house_df[house_df['业务级别']=='重要汇聚'].copy()
@@ -282,9 +284,9 @@ class queryAllHouseThread(QThread):
     def isUse(self,use_percent):
         if use_percent >= 100:
             return '已用完'
-        elif use_percent >= 80:
+        elif use_percent >= self.red_num:
             return '紧张'
-        elif use_percent >= 50:
+        elif use_percent >= self.yellow_num:
             return '预警'
         else:
             return '正常'
@@ -304,15 +306,15 @@ class writeXlsxThread(QThread):
             self.state_signal.emit("正在写入结果文件Excel..")
             # 写入Excel
             with pd.ExcelWriter(self.path) as writer:
-                self.table_df.to_excel(writer, sheet_name='机房信息统计', index=False)
-                self.device_df.to_excel(writer, sheet_name='设备清单', index=False)
-                self.rack_df.to_excel(writer, sheet_name='机架位', index=False)
+                self.table_df.to_excel(writer, sheet_name='机房统计', index=False)
+                self.device_df.to_excel(writer, sheet_name='设备详细清单', index=False)
+                self.rack_df.to_excel(writer, sheet_name='机房详细清单', index=False)
             self.state_signal.emit("写入Excel成功")
         except Exception as e:
             self.state_signal.emit(f"写入Excel失败: {str(e)}")
 
 # 查找数据库结构类，返回数据库表名列表，各表数据行数
-class searchTableThread(QThread):
+class SearchTableThread(QThread):
     # 定义两个信号
     state_signal = Signal(str)  # 状态信号
     table_signal = Signal(list)  # 表名信号

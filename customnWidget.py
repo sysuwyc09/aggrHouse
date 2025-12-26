@@ -237,7 +237,12 @@ class BarChartView(QChartView):
         self.chart.legend().setLabelColor(QColor(200, 200, 200))
     
     def setData(self, data_dict, title):
-        self.chart.removeAllSeries()  
+        self.chart.removeAllSeries()
+        # 移除现有的X轴
+        axes = self.chart.axes(Qt.Horizontal)
+        for axis in axes:
+            self.chart.removeAxis(axis)
+
         # 获取所有分类
         categories = {category for class_data in data_dict.values() 
                            for category in class_data.keys()}

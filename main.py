@@ -53,7 +53,77 @@ class Mainwin(QMainWindow, Ui_MainWindow):
         self.setting_bt.clicked.connect(self.pageSelect)
         self.search_table_bt.clicked.connect(self.searchTable)
         self.clear_table_bt.clicked.connect(self.clearDataBaseTable)
+        # TopN 页面按钮查询
+        self.topN_bt.clicked.connect(self.pageSelect)
+        self.search_topN_bt.clicked.connect(self.searchTopNHouse)
+
+
+        self.stackedWidget.setCurrentIndex(0)
     
+    # TopN 页面查询所有利用率机房
+    def searchTopNHouse(self):
+        yellow_num = self.yellow_num_QB.value()
+        red_num = self.red_num_QB.value()
+        self.search_topN_thread = queryAllHouseThread(yellow_num,red_num)
+        self.search_topN_thread.state_signal.connect(self.showStatus)
+        self.search_topN_thread.error_signal.connect(self.showError)
+        self.search_topN_thread.dataframe_signal.connect(self.showTopNDataFrame)
+        self.search_topN_thread.start()        
+
+    def showTopNDataFrame(self, device_df,  rack_df,  table_df):
+        self.device_df = device_df
+        self.rack_df = rack_df
+        self.table_df = table_df
+        yellow_num = self.yellow_num_QB.value()
+        red_num = self.red_num_QB.value()
+        topN_df = rack_df[rack_df['利用率']>=yellow_num]
+        if topN_df.shape[0] == 0:
+            QMessageBox.information(self, '提示', '没有符合条件的机房')
+            return;
+        topN_df = topN_df[['所属区县','机房名称','业务级别','机架数','可装设施高度','已用设施高度','利用率']]
+
+        self.topN_tw.setRowCount(topN_df.shape[0])
+        # 最后一列添加操作列，操作列为按钮，按钮绑定事件点击详情，调用searchOneHousePercent，house_name为对应列机房名称
+        self.topN_tw.setColumnCount(topN_df.shape[1]+1)
+        self.topN_tw.setHorizontalHeaderLabels(topN_df.columns.tolist() + ['操作'])
+        # 机房名称列随内容扩展
+        self.topN_tw.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+
+        for i in range(topN_df.shape[0]):
+            for j in range(topN_df.shape[1]):
+                self.topN_tw.setItem(i, j, QTableWidgetItem(str(topN_df.iloc[i, j])))
+            # 操作列添加按钮
+            btn = QPushButton('详情')
+            btn.setStyleSheet("""
+                QPushButton { 
+                    border: 1px solid rgb(85, 170, 255); 
+                    background-color: rgb(13, 9, 36); 
+                    color: rgb(0, 170, 255); 
+                    border-radius: 6px;
+                } 
+                
+                QPushButton:hover { 
+                    background-color: rgb(85, 0, 255); 
+                    color: rgb(7, 255, 119); 
+                } 
+                
+                QPushButton:pressed { 
+                    background-color: rgb(0, 0, 0); 
+                }
+            """)
+            btn.clicked.connect(lambda checked=False, name=topN_df.iloc[i, 1]: self.searchTopNOneHouseDetail(name))
+            self.topN_tw.setCellWidget(i, topN_df.shape[1], btn)
+
+        
+
+    def searchTopNOneHouseDetail(self, house_name):
+        self.stackedWidget.setCurrentIndex(0)
+        self.keys_le.setText(house_name)
+        self.house_names_cb.clear()
+        self.house_names_cb.addItem(house_name)
+        self.house_names_cb.setCurrentIndex(0)
+        self.searchOneHousePercent()
+
     def clearDataBaseTable(self):
         table_name = self.table_names_cb.currentText()
         if len(table_name) == 0:
@@ -69,7 +139,7 @@ class Mainwin(QMainWindow, Ui_MainWindow):
 
     # 查找数据库结构
     def searchTable(self):
-        self.search_table_thread = searchTableThread()
+        self.search_table_thread = SearchTableThread()
         self.search_table_thread.state_signal.connect(self.showStatus)
         self.search_table_thread.table_signal.connect(self.setTableComboBox)
         self.search_table_thread.dataframe_signal.connect(self.showTableInfor)
@@ -92,8 +162,6 @@ class Mainwin(QMainWindow, Ui_MainWindow):
             tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
 
-
-
     # 全量机房查询
     def queryAllHouse(self):
         self.query_all_thread = queryAllHouseThread()
@@ -104,11 +172,13 @@ class Mainwin(QMainWindow, Ui_MainWindow):
         self.query_all_thread.dataframe_signal.connect(self.showOneHouseDataFrame)
         self.query_all_thread.start()
 
+    # 饼状图 展示所有利用率机房分布
     def showAllPie(self, important_dict,normal_dict,business_dict):
         self.important_pie.setData(important_dict,'重要汇聚空间利用率分布')
         self.normal_pie.setData(normal_dict,'普通汇聚空间利用率分布')
         self.business_pie.setData(business_dict,'业务汇聚空间利用率分布')
 
+    # 柱状图显示各区域汇聚机房数
     def showAreaCol(self, area_dict):
         self.area_house_bar.setData(area_dict,'各区域汇聚机房数')
 
@@ -169,6 +239,9 @@ class Mainwin(QMainWindow, Ui_MainWindow):
             page_widget = self.stackedWidget.findChild(QWidget, "kpi_page")
         elif self.sender() == self.setting_bt:
             page_widget = self.stackedWidget.findChild(QWidget, "setting_page")
+        elif self.sender() == self.topN_bt:
+            page_widget = self.stackedWidget.findChild(QWidget, "topN_page")
+        
         if page_widget:
             self.stackedWidget.setCurrentWidget(page_widget)
     
@@ -194,6 +267,7 @@ class Mainwin(QMainWindow, Ui_MainWindow):
         self.readFileTD.result_signal.connect(self.readFileCols)
         self.readFileTD.start()
 
+    # 显示软件运行状态
     def showStatus(self, status):
         self.import_status.setText(status)
 
@@ -229,7 +303,7 @@ class Mainwin(QMainWindow, Ui_MainWindow):
                 self.cols_grid.itemAtPosition(1, i).widget().setCurrentIndex(self.currentCols.index(tempMark))
         self.showStatus('自动匹配对应列如上，请核对，确认无问题后更新缓存按钮！')
 
-    # 写入数据库    
+    # 写入数据库，更新缓存
     def updateDataBase(self):
         # 根据cols_grid 0行和1行对应修改currentCols
         df = pd.DataFrame(self.currentLis, columns=self.currentCols)
