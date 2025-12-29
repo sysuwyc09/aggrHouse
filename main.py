@@ -49,7 +49,6 @@ class Mainwin(QMainWindow, Ui_MainWindow):
         self.device_df = pd.DataFrame()
         self.table_df = pd.DataFrame()
         self.download_bt.clicked.connect(self.downLoadFile)
-        self.query_all_bt.clicked.connect(self.queryAllHouse)
         self.setting_bt.clicked.connect(self.pageSelect)
         self.search_table_bt.clicked.connect(self.searchTable)
         self.clear_table_bt.clicked.connect(self.clearDataBaseTable)
@@ -57,15 +56,22 @@ class Mainwin(QMainWindow, Ui_MainWindow):
         self.topN_bt.clicked.connect(self.pageSelect)
         self.search_topN_bt.clicked.connect(self.searchTopNHouse)
 
-
+        # 初始页面为home页面
         self.stackedWidget.setCurrentIndex(0)
     
+
+
     # TopN 页面查询所有利用率机房
     def searchTopNHouse(self):
         yellow_num = self.yellow_num_QB.value()
         red_num = self.red_num_QB.value()
+        if yellow_num >= red_num:
+            QMessageBox.information(self, '提示', '预警阈值应小于紧张阈值')
+            return;
         self.search_topN_thread = queryAllHouseThread(yellow_num,red_num)
         self.search_topN_thread.state_signal.connect(self.showStatus)
+        self.search_topN_thread.area_signal.connect(self.showAreaCol)
+        self.search_topN_thread.pie_signal.connect(self.showAllPie)
         self.search_topN_thread.error_signal.connect(self.showError)
         self.search_topN_thread.dataframe_signal.connect(self.showTopNDataFrame)
         self.search_topN_thread.start()        
@@ -163,14 +169,14 @@ class Mainwin(QMainWindow, Ui_MainWindow):
 
 
     # 全量机房查询
-    def queryAllHouse(self):
-        self.query_all_thread = queryAllHouseThread()
-        self.query_all_thread.state_signal.connect(self.showStatus)
-        self.query_all_thread.area_signal.connect(self.showAreaCol)
-        self.query_all_thread.error_signal.connect(self.showError)
-        self.query_all_thread.pie_signal.connect(self.showAllPie)
-        self.query_all_thread.dataframe_signal.connect(self.showOneHouseDataFrame)
-        self.query_all_thread.start()
+    # def queryAllHouse(self):
+    #     self.query_all_thread = queryAllHouseThread()
+    #     self.query_all_thread.state_signal.connect(self.showStatus)
+    #     self.query_all_thread.area_signal.connect(self.showAreaCol)
+    #     self.query_all_thread.error_signal.connect(self.showError)
+    #     self.query_all_thread.pie_signal.connect(self.showAllPie)
+    #     self.query_all_thread.dataframe_signal.connect(self.showOneHouseDataFrame)
+    #     self.query_all_thread.start()
 
     # 饼状图 展示所有利用率机房分布
     def showAllPie(self, important_dict,normal_dict,business_dict):

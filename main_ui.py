@@ -1069,38 +1069,6 @@ class Ui_MainWindow(object):
         self.kpi_page.setObjectName(u"kpi_page")
         self.verticalLayout_4 = QVBoxLayout(self.kpi_page)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        self.horizontalLayout_13 = QHBoxLayout()
-        self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
-        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_13.addItem(self.horizontalSpacer_5)
-
-        self.query_all_bt = QPushButton(self.kpi_page)
-        self.query_all_bt.setObjectName(u"query_all_bt")
-        sizePolicy.setHeightForWidth(self.query_all_bt.sizePolicy().hasHeightForWidth())
-        self.query_all_bt.setSizePolicy(sizePolicy)
-        self.query_all_bt.setMinimumSize(QSize(100, 30))
-        self.query_all_bt.setStyleSheet(u"QPushButton {\n"
-"	border: 1px solid rgb(85, 170, 255);\n"
-"	background-color: rgb(13, 9, 36);\n"
-"	border-radius: 13;\n"
-"	color: rgb(0, 170, 255);\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"	background-color: rgb(85, 0, 255);\n"
-"	color: rgb(7, 255, 119);\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"	background-color: rgb(0, 0, 0);\n"
-"}")
-
-        self.horizontalLayout_13.addWidget(self.query_all_bt)
-
-
-        self.verticalLayout_4.addLayout(self.horizontalLayout_13)
-
         self.area_house_bar = BarChartView(self.kpi_page)
         self.area_house_bar.setObjectName(u"area_house_bar")
 
@@ -1126,8 +1094,8 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_4.addLayout(self.horizontalLayout_12)
 
-        self.verticalLayout_4.setStretch(1, 3)
-        self.verticalLayout_4.setStretch(2, 5)
+        self.verticalLayout_4.setStretch(0, 3)
+        self.verticalLayout_4.setStretch(1, 5)
         self.stackedWidget.addWidget(self.kpi_page)
         self.topN_page = QWidget()
         self.topN_page.setObjectName(u"topN_page")
@@ -1459,7 +1427,7 @@ class Ui_MainWindow(object):
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"\u6c47\u805a\u673a\u623f\u5229\u7528\u7387\u7edf\u8ba1\u5de5\u5177", None))
         self.module_bt.setText(QCoreApplication.translate("MainWindow", u"\u6570\u636e\u66f4\u65b0", None))
         self.setting_bt.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
-        self.search_percent_bt.setText(QCoreApplication.translate("MainWindow", u"\u6838\u5bf9", None))
+        self.search_percent_bt.setText(QCoreApplication.translate("MainWindow", u"\u67e5\u8be2", None))
         self.search_table_bt.setText(QCoreApplication.translate("MainWindow", u"\u8868\u67e5\u8be2", None))
         self.clear_table_bt.setText(QCoreApplication.translate("MainWindow", u"\u6e05\u7a7a", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u5907\u9ad8\u5ea6", None))
@@ -1473,7 +1441,6 @@ class Ui_MainWindow(object):
         self.col3_label.setText(QCoreApplication.translate("MainWindow", u"--", None))
         self.col3_label_3.setText(QCoreApplication.translate("MainWindow", u"--", None))
         self.col3_label_2.setText(QCoreApplication.translate("MainWindow", u"--", None))
-        self.query_all_bt.setText(QCoreApplication.translate("MainWindow", u"\u5168\u91cf\u5206\u6790", None))
         self.label_6.setText(QCoreApplication.translate("MainWindow", u"\u9884\u8b66\u95e8\u9650\u503c\uff08%\uff09\uff1a", None))
         self.label_7.setText(QCoreApplication.translate("MainWindow", u"\u7d27\u5f20\u95e8\u9650\u503c\uff08%\uff09\uff1a", None))
         self.search_topN_bt.setText(QCoreApplication.translate("MainWindow", u"\u67e5\u8be2", None))

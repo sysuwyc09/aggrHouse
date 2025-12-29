@@ -534,7 +534,7 @@ QPushButton:pressed {
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>0</number>
+          <number>4</number>
          </property>
          <widget class="QWidget" name="home_page">
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -1809,60 +1809,7 @@ QComboBox QAbstractItemView::item:hover {
           </layout>
          </widget>
          <widget class="QWidget" name="kpi_page">
-          <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,3,5">
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_13">
-             <item>
-              <spacer name="horizontalSpacer_5">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="QPushButton" name="query_all_bt">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>100</width>
-                 <height>30</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QPushButton {
-	border: 1px solid rgb(85, 170, 255);
-	background-color: rgb(13, 9, 36);
-	border-radius: 13;
-	color: rgb(0, 170, 255);
-}
-
-QPushButton:hover {
-	background-color: rgb(85, 0, 255);
-	color: rgb(7, 255, 119);
-}
-
-QPushButton:pressed {
-	background-color: rgb(0, 0, 0);
-}</string>
-               </property>
-               <property name="text">
-                <string>全量分析</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
+          <layout class="QVBoxLayout" name="verticalLayout_4" stretch="3,5">
            <item>
             <widget class="BarChartView" name="area_house_bar"/>
            </item>

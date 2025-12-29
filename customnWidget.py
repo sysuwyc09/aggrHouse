@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import Qt, QTimer, QTime,QPoint
 from PySide6.QtGui import *
-from PySide6.QtCharts import QChart, QChartView, QPieSeries,QBarSet, QBarSeries, QChart, QChartView, QBarCategoryAxis
+from PySide6.QtCharts import QChart, QChartView, QPieSeries,QBarSet, QBarSeries, QChart, QChartView, QBarCategoryAxis,QPieSlice
 import math
 
 class CircularProgress(QWidget):
@@ -110,26 +110,69 @@ class PieChartView(QChartView):
         # 图例颜色
         self.chart.legend().setLabelColor(QColor(200, 200, 200))
         
+    # def setData(self, data_dict,title):
+    #     """设置数据，自动循环使用预设颜色"""
+    #     series = QPieSeries()
+    #     self.chart.setTitle(title)
+        
+    #     # 添加数据切片并应用颜色
+    #     for i, (name, value) in enumerate(data_dict.items()):
+    #         slice = series.append(name, value)
+    #         slice.setLabelVisible(False)
+    #         slice.hovered.connect(self.onHovered)
+            
+    #         # 循环使用预设颜色
+    #         color_index = i % len(self.slice_colors)
+    #         slice.setBrush(self.slice_colors[color_index])
+            
+    #     self.chart.removeAllSeries()
+    #     self.chart.addSeries(series)
+    #     self.chart.legend().setVisible(True)
+    #     self.chart.legend().setAlignment(Qt.AlignRight)
     def setData(self, data_dict,title):
         """设置数据，自动循环使用预设颜色"""
         series = QPieSeries()
         self.chart.setTitle(title)
+        names = []
+        
+        # 先计算数据总和
+        total = sum(data_dict.values())
         
         # 添加数据切片并应用颜色
         for i, (name, value) in enumerate(data_dict.items()):
+            names.append(name)
             slice = series.append(name, value)
-            slice.setLabelVisible(False)
-            slice.hovered.connect(self.onHovered)
-            
+            # 设置标签格式：显示数值和百分比（使用固定的总和计算）
+            percentage = (value / total * 100) if total > 0 else 0
+            slice.setLabel(f"{percentage:.1f}%")
+            slice.setLabelVisible(True)
+            # 设置标签字体大小和颜色
+            label_font = QFont()
+            label_font.setPixelSize(12)  # 增大字体便于阅读
+            label_font.setBold(True)     # 加粗字体
+            slice.setLabelFont(label_font)
+            slice.setLabelPosition(QPieSlice.LabelOutside)  # 外围显示
+            # 设置标签连接线
+            slice.setLabelArmLengthFactor(0.2)  # 连接线长度
             # 循环使用预设颜色
             color_index = i % len(self.slice_colors)
             slice.setBrush(self.slice_colors[color_index])
+            slice.setLabelBrush(QColor(255, 255, 255))  # 白色标签文字
+            slice.hovered.connect(self.onHovered)
             
         self.chart.removeAllSeries()
         self.chart.addSeries(series)
-        self.chart.legend().setVisible(True)
-        self.chart.legend().setAlignment(Qt.AlignRight)
-        
+        # 设置图表动画
+        self.chart.setAnimationOptions(QChart.SeriesAnimations)
+        legend = self.chart.legend()
+        legend.setVisible(True)
+        legend.setAlignment(Qt.AlignBottom)
+        # 获取所有图例标记并设置为原始name
+        markers = legend.markers(series)
+        for i, marker in enumerate(markers):
+            if i < len(names):
+                marker.setLabel(names[i])
+
     def onHovered(self, state):
         slice = self.sender()
         if state:
@@ -143,7 +186,7 @@ class PieChartView(QChartView):
             
             QToolTip.showText(
                 self.mapToGlobal(QPoint(int(x), int(y))),
-                f"{slice.label()}: {slice.value()} ({slice.percentage()*100:.1f}%)"
+                f"{slice.value()}"
             )
         else:
             QToolTip.hideText()
