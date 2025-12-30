@@ -124,7 +124,6 @@ class queryOneHouseThread(QThread):
     result_signal = Signal(dict, dict)  # 列名和数据信号
     percent_signal = Signal(float)  # 机房利用率信号
     error_signal = Signal(list)  # 错误信号
-    dataframe_signal = Signal(pd.DataFrame,pd.DataFrame,pd.DataFrame)  # 数据信号
 
     def __init__(self, house_name):
         super().__init__()
@@ -163,15 +162,7 @@ class queryOneHouseThread(QThread):
             use_high_num = device_df['设备高度'].astype(float).sum()
             use_percent = round(use_high_num / total_high_num * 100, 2)
             self.percent_signal.emit(use_percent)
-            # 发送数据信号
-            table_df = pd.DataFrame({
-                '机房名称':[self.house_name],
-                '机架数':[rack_df.shape[0]],
-                '可装设施高度':[total_high_num],
-                '已用设施高度':[use_high_num],
-                '利用率':[use_percent]
-            })
-            self.dataframe_signal.emit(device_df,rack_df,table_df)
+            
             self.state_signal.emit("查询数据库完成..")
         except Exception as e:
             self.state_signal.emit(f"查询失败: {str(e)}")
@@ -181,7 +172,7 @@ class queryOneHouseThread(QThread):
 class queryAllHouseThread(QThread):
     # 定义两个信号
     state_signal = Signal(str)  # 状态信号
-    area_signal = Signal(dict)  # 区域机房数结果信号
+    area_signal = Signal(pd.DataFrame)  # 区域机房数结果信号
     error_signal = Signal(list)  # 错误信号
     pie_signal = Signal(dict,dict,dict)  # 利用率结果信号
     dataframe_signal = Signal(pd.DataFrame,pd.DataFrame,pd.DataFrame)
@@ -199,13 +190,13 @@ class queryAllHouseThread(QThread):
             # 统计机房数
             house_df = pd.read_sql("SELECT * FROM 汇聚机房", conn)
             house_df = house_df[house_df['生命周期状态']=='现网在用']
-            area_table = pd.pivot_table(house_df, index=['所属区县','业务级别'], aggfunc={'机房名称':'count'})
-            area_table = area_table.reset_index()
-            area_grped = area_table.groupby('所属区县')
-            area_dict = {}
-            for name, group in area_grped:
-                area_dict[name] = group.set_index('业务级别')['机房名称'].to_dict()
-            self.area_signal.emit(area_dict)
+            # area_table = pd.pivot_table(house_df, index=['所属区县','业务级别'], aggfunc={'机房名称':'count'})
+            # area_table = area_table.reset_index()
+            # area_grped = area_table.groupby('所属区县')
+            # area_dict = {}
+            # for name, group in area_grped:
+            #     area_dict[name] = group.set_index('业务级别')['机房名称'].to_dict()
+            # self.area_signal.emit(area_dict)
 
             # 统计设备数
             device_df = pd.read_sql("SELECT * FROM 设备清单", conn)
@@ -268,7 +259,21 @@ class queryAllHouseThread(QThread):
             all_table = pd.pivot_table(house_df, index=['业务级别','利用率状态'], aggfunc={'机房名称':'count'})
             all_table = all_table.reset_index()
             all_table = all_table.rename(columns={'机房名称':'数量'})
-            
+
+            # 按区域统计机房数量
+            area_table = pd.pivot_table(house_df,index='所属区县',columns='利用率状态',aggfunc={'机房名称':'count'},fill_value=0)
+            area_table.columns = area_table.columns.droplevel(0)
+
+            area_sort_cols = ['赤坎区','麻章区','霞山区','坡头区','开发区','雷州市','廉江市','吴川市','遂溪县','徐闻县']
+            # area_table 按所属区县列 按area_sort_cols排序
+            area_table = area_table.loc[area_sort_cols].reset_index()
+            cols = ['所属区县','已用完','紧张','预警','充足','零利用率']
+            for col in cols:
+                if col not in area_table.columns:
+                    area_table[col] = 0
+            area_table = area_table[cols]
+            self.area_signal.emit(area_table)
+
             self.dataframe_signal.emit(device_df,house_df,all_table)
 
 
@@ -288,8 +293,10 @@ class queryAllHouseThread(QThread):
             return '紧张'
         elif use_percent >= self.yellow_num:
             return '预警'
+        elif use_percent > 0:
+            return '充足'
         else:
-            return '正常'
+            return '零利用率'
 
         
 class writeXlsxThread(QThread):

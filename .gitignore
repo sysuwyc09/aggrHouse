@@ -5,3 +5,5 @@ __pycache__/
 源文件/
 data/
 生成应用程序.bat
+dist/
+build/

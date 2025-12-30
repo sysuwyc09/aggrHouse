@@ -19,6 +19,8 @@ class Mainwin(QMainWindow, Ui_MainWindow):
         # 添加鼠标拖动相关变量
         self.drag_pos = QtCore.QPoint()
         self.setupUi(self)  # 调用Ui_MainWindow的setupUi方法
+
+
         # 点击关闭按钮，关闭窗口
         self.close_bt.clicked.connect(self.close)
         # 点击最小化按钮，最小化窗口
@@ -35,8 +37,10 @@ class Mainwin(QMainWindow, Ui_MainWindow):
             ['专业', '设备型号', '设备高度'],
             ['所属区县', '所属站点', '机房名称', '业务级别', '生命周期状态'],
             ['所属机房',  '装机位置编号'],
-            ['专业', '设备名称', '所属机房', '设备型号', '生命周期状态']
+            ['设备名称', '所属机房', '设备型号', '生命周期状态']
         ]
+        # 类型页面初始隐藏
+        self.type_frame.setVisible(False)
         self.fileType_cb.currentIndexChanged.connect(self.changeColLabel)
         self.fileType_cb.addItems(self.fileTypeCols)
         self.currentCols = []
@@ -58,8 +62,30 @@ class Mainwin(QMainWindow, Ui_MainWindow):
 
         # 初始页面为home页面
         self.stackedWidget.setCurrentIndex(0)
-    
 
+        self.area_house_bar.barClicked.connect(self.onBarClicked)
+        self.important_pie.pieClicked.connect(self.onAggrHouseDetail)
+        self.normal_pie.pieClicked.connect(self.onAggrHouseDetail)
+        self.business_pie.pieClicked.connect(self.onAggrHouseDetail)
+
+
+    def onAggrHouseDetail(self, title_name):
+        house_type = title_name.split('空间利用率')[0]
+        print(house_type)
+        temp_df = self.rack_df.copy()
+        temp_df = temp_df[temp_df['业务级别'] == house_type]
+        self.stackedWidget.setCurrentIndex(4)
+        self.showTopNTable(temp_df)
+
+    def onBarClicked(self, area_name, house_use_status):
+        temp_df = self.rack_df.copy()
+        temp_df = temp_df[temp_df['所属区县'] == area_name]
+        if house_use_status != '全部':
+            temp_df = temp_df[temp_df['利用率状态'] == house_use_status]
+        if temp_df.shape[0] == 0:
+            return;
+        self.stackedWidget.setCurrentIndex(4)
+        self.showTopNTable(temp_df)
 
     # TopN 页面查询所有利用率机房
     def searchTopNHouse(self):
@@ -80,31 +106,51 @@ class Mainwin(QMainWindow, Ui_MainWindow):
         self.device_df = device_df
         self.rack_df = rack_df
         self.table_df = table_df
-        yellow_num = self.yellow_num_QB.value()
-        red_num = self.red_num_QB.value()
-        topN_df = rack_df[rack_df['利用率']>=yellow_num]
+        topN_df = rack_df.copy()
         if topN_df.shape[0] == 0:
             QMessageBox.information(self, '提示', '没有符合条件的机房')
             return;
-        topN_df = topN_df[['所属区县','机房名称','业务级别','机架数','可装设施高度','已用设施高度','利用率']]
+        self.showTopNTable(topN_df)
 
+
+
+    def showTopNTable(self, topN_df):
+        topN_df = topN_df[['所属区县','机房名称','业务级别','机架数','可装设施高度','已用设施高度','利用率','利用率状态']]
         self.topN_tw.setRowCount(topN_df.shape[0])
         # 最后一列添加操作列，操作列为按钮，按钮绑定事件点击详情，调用searchOneHousePercent，house_name为对应列机房名称
         self.topN_tw.setColumnCount(topN_df.shape[1]+1)
-        self.topN_tw.setHorizontalHeaderLabels(topN_df.columns.tolist() + ['操作'])
+        cols = ['所属区县','机房名称','业务级别','机架数','可装设施高度','已用设施高度','利用率%','利用率状态','操作']
+        self.topN_tw.setHorizontalHeaderLabels(cols)
         # 机房名称列随内容扩展
         self.topN_tw.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        # 利用率状态列隐藏
+        self.topN_tw.setColumnHidden(7, True)
 
         for i in range(topN_df.shape[0]):
+            # 颜色
+            if topN_df.iloc[i, 7] == '已用完':
+                color = 'red'
+            elif topN_df.iloc[i, 7] == '紧张':
+                # 橙色
+                color = 'orange'
+            elif topN_df.iloc[i, 7] == '预警':
+                color = 'yellow'
+            elif topN_df.iloc[i, 7] == '充足':
+                color = 'green'
+            else:
+                # 粉红色
+                color = 'pink'
             for j in range(topN_df.shape[1]):
-                self.topN_tw.setItem(i, j, QTableWidgetItem(str(topN_df.iloc[i, j])))
+                item = QTableWidgetItem(str(topN_df.iloc[i, j]))
+                item.setForeground(QColor(color))
+                self.topN_tw.setItem(i, j, item)
             # 操作列添加按钮
             btn = QPushButton('详情')
             btn.setStyleSheet("""
                 QPushButton { 
-                    border: 1px solid rgb(85, 170, 255); 
+                    border: 1px solid """ + color + """;  
                     background-color: rgb(13, 9, 36); 
-                    color: rgb(0, 170, 255); 
+                    color: """ + color + """; 
                     border-radius: 6px;
                 } 
                 
@@ -118,9 +164,8 @@ class Mainwin(QMainWindow, Ui_MainWindow):
                 }
             """)
             btn.clicked.connect(lambda checked=False, name=topN_df.iloc[i, 1]: self.searchTopNOneHouseDetail(name))
-            self.topN_tw.setCellWidget(i, topN_df.shape[1], btn)
+            self.topN_tw.setCellWidget(i, topN_df.shape[1], btn)        
 
-        
 
     def searchTopNOneHouseDetail(self, house_name):
         self.stackedWidget.setCurrentIndex(0)
@@ -185,8 +230,8 @@ class Mainwin(QMainWindow, Ui_MainWindow):
         self.business_pie.setData(business_dict,'业务汇聚空间利用率分布')
 
     # 柱状图显示各区域汇聚机房数
-    def showAreaCol(self, area_dict):
-        self.area_house_bar.setData(area_dict,'各区域汇聚机房数')
+    def showAreaCol(self, area_table):
+        self.area_house_bar.setData(area_table,'各区域汇聚机房利用率情况')
 
     def downLoadFile(self):
         # 生成文件名
@@ -209,7 +254,6 @@ class Mainwin(QMainWindow, Ui_MainWindow):
         self.query_one_house_thread.result_signal.connect(self.showOneHouseReslut)
         self.query_one_house_thread.error_signal.connect(self.showError)
         self.query_one_house_thread.percent_signal.connect(self.setPercent)
-        self.query_one_house_thread.dataframe_signal.connect(self.showOneHouseDataFrame)
         self.query_one_house_thread.start()
 
     def showOneHouseDataFrame(self, device_df,rack_df,table_df):
@@ -252,7 +296,11 @@ class Mainwin(QMainWindow, Ui_MainWindow):
             self.stackedWidget.setCurrentWidget(page_widget)
     
     def changeColLabel(self):
-        # 初始化：
+        # 初始化
+        if self.fileType_cb.currentIndex() == 3:
+            self.type_frame.setVisible(True)
+        else:
+            self.type_frame.setVisible(False)
         self.currentCols = []
         self.currentLis = []
         for col in range(0, 5):
@@ -318,6 +366,19 @@ class Mainwin(QMainWindow, Ui_MainWindow):
             old_col_name = self.cols_grid.itemAtPosition(1, i).widget().currentText()
             df.rename(columns={old_col_name: cols[i]}, inplace=True)
         df = df[cols]
+        if self.fileType_cb.currentIndex() == 3:
+            # 判断type_frame check的RadioButton哪个
+            if self.cs_qb.isChecked():
+                df['专业'] = '传输'
+            elif self.cy_qb.isChecked():
+                df['专业'] = '城域网'
+            elif self.wx_qb.isChecked():
+                df['专业'] = '无线'
+            elif self.odf_qb.isChecked():
+                df['专业'] = '光缆'
+                df['设备型号'] = 'ODF'
+            elif self.iodf_qb.isChecked():
+                df['专业'] = 'IODF'
         self.writeDataBaseTD = writeDataBaseThread(self.fileType_cb.currentText(), df)
         self.writeDataBaseTD.state_signal.connect(self.showStatus)
         self.writeDataBaseTD.start()
@@ -343,6 +404,8 @@ class Mainwin(QMainWindow, Ui_MainWindow):
         if event.buttons() == QtCore.Qt.LeftButton:
             self.move(event.globalPosition().toPoint() - self.drag_pos)
             event.accept()
+
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
