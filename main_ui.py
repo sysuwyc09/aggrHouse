@@ -764,14 +764,9 @@ class Ui_MainWindow(object):
         self.stackedWidget.addWidget(self.setting_page)
         self.importFile_page = QWidget()
         self.importFile_page.setObjectName(u"importFile_page")
-        self.horizontalLayout_13 = QHBoxLayout(self.importFile_page)
-        self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
-        self.horizontalSpacer_2 = QSpacerItem(50, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_13.addItem(self.horizontalSpacer_2)
-
-        self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2 = QVBoxLayout(self.importFile_page)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_2.setContentsMargins(36, -1, 36, -1)
         self.verticalSpacer = QSpacerItem(20, 138, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout_2.addItem(self.verticalSpacer)
@@ -911,50 +906,34 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addItem(self.verticalSpacer_3)
 
-        self.cols_grid = QGridLayout()
+        self.cols_grid_frame = QFrame(self.importFile_page)
+        self.cols_grid_frame.setObjectName(u"cols_grid_frame")
+        self.cols_grid = QGridLayout(self.cols_grid_frame)
         self.cols_grid.setObjectName(u"cols_grid")
-        self.col2_cb_2 = QComboBox(self.importFile_page)
-        self.col2_cb_2.setObjectName(u"col2_cb_2")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
+        self.col1_label = QLabel(self.cols_grid_frame)
+        self.col1_label.setObjectName(u"col1_label")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.col2_cb_2.sizePolicy().hasHeightForWidth())
-        self.col2_cb_2.setSizePolicy(sizePolicy2)
-        self.col2_cb_2.setMinimumSize(QSize(0, 30))
-        self.col2_cb_2.setMaximumSize(QSize(16777215, 30))
-        self.col2_cb_2.setStyleSheet(u"QComboBox{\n"
-"	border: 1px solid rgb(85, 170, 255);\n"
-"	background-color: rgb(13, 9, 36);\n"
-"	color: rgb(0, 170, 255);\n"
-"}\n"
-"QComboBox QAbstractItemView {\n"
-"        color: rgb(0, 170, 255);  /* \u4e0b\u62c9\u9879\u6587\u672c\u989c\u8272 */\n"
-" }\n"
-"QComboBox QAbstractItemView::item:hover {\n"
-"        color: rgb(7, 255, 119); \n"
-"}")
-
-        self.cols_grid.addWidget(self.col2_cb_2, 1, 3, 1, 1)
-
-        self.col3_label_3 = QLabel(self.importFile_page)
-        self.col3_label_3.setObjectName(u"col3_label_3")
-        sizePolicy2.setHeightForWidth(self.col3_label_3.sizePolicy().hasHeightForWidth())
-        self.col3_label_3.setSizePolicy(sizePolicy2)
-        self.col3_label_3.setMinimumSize(QSize(0, 30))
-        self.col3_label_3.setMaximumSize(QSize(16777215, 30))
-        self.col3_label_3.setStyleSheet(u"QLabel {\n"
+        sizePolicy2.setHeightForWidth(self.col1_label.sizePolicy().hasHeightForWidth())
+        self.col1_label.setSizePolicy(sizePolicy2)
+        self.col1_label.setMaximumSize(QSize(16777215, 30))
+        self.col1_label.setStyleSheet(u"QLabel {\n"
 "	border: 1px solid rgb(85, 170, 255);\n"
 "	background-color: rgb(13, 9, 36);\n"
 "	color: rgb(0, 170, 255);\n"
 "}")
-        self.col3_label_3.setAlignment(Qt.AlignCenter)
+        self.col1_label.setAlignment(Qt.AlignCenter)
 
-        self.cols_grid.addWidget(self.col3_label_3, 0, 4, 1, 1)
+        self.cols_grid.addWidget(self.col1_label, 0, 0, 1, 1)
 
-        self.col2_label = QLabel(self.importFile_page)
+        self.col2_label = QLabel(self.cols_grid_frame)
         self.col2_label.setObjectName(u"col2_label")
-        sizePolicy2.setHeightForWidth(self.col2_label.sizePolicy().hasHeightForWidth())
-        self.col2_label.setSizePolicy(sizePolicy2)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.col2_label.sizePolicy().hasHeightForWidth())
+        self.col2_label.setSizePolicy(sizePolicy3)
         self.col2_label.setMinimumSize(QSize(0, 30))
         self.col2_label.setMaximumSize(QSize(16777215, 30))
         self.col2_label.setStyleSheet(u"QLabel {\n"
@@ -966,10 +945,10 @@ class Ui_MainWindow(object):
 
         self.cols_grid.addWidget(self.col2_label, 0, 1, 1, 1)
 
-        self.col3_label = QLabel(self.importFile_page)
+        self.col3_label = QLabel(self.cols_grid_frame)
         self.col3_label.setObjectName(u"col3_label")
-        sizePolicy2.setHeightForWidth(self.col3_label.sizePolicy().hasHeightForWidth())
-        self.col3_label.setSizePolicy(sizePolicy2)
+        sizePolicy3.setHeightForWidth(self.col3_label.sizePolicy().hasHeightForWidth())
+        self.col3_label.setSizePolicy(sizePolicy3)
         self.col3_label.setMinimumSize(QSize(0, 30))
         self.col3_label.setMaximumSize(QSize(16777215, 30))
         self.col3_label.setStyleSheet(u"QLabel {\n"
@@ -981,13 +960,55 @@ class Ui_MainWindow(object):
 
         self.cols_grid.addWidget(self.col3_label, 0, 2, 1, 1)
 
-        self.col1_cb = QComboBox(self.importFile_page)
+        self.col3_label_2 = QLabel(self.cols_grid_frame)
+        self.col3_label_2.setObjectName(u"col3_label_2")
+        sizePolicy3.setHeightForWidth(self.col3_label_2.sizePolicy().hasHeightForWidth())
+        self.col3_label_2.setSizePolicy(sizePolicy3)
+        self.col3_label_2.setMinimumSize(QSize(0, 30))
+        self.col3_label_2.setMaximumSize(QSize(16777215, 30))
+        self.col3_label_2.setStyleSheet(u"QLabel {\n"
+"	border: 1px solid rgb(85, 170, 255);\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"}")
+        self.col3_label_2.setAlignment(Qt.AlignCenter)
+
+        self.cols_grid.addWidget(self.col3_label_2, 0, 3, 1, 1)
+
+        self.col3_label_3 = QLabel(self.cols_grid_frame)
+        self.col3_label_3.setObjectName(u"col3_label_3")
+        sizePolicy3.setHeightForWidth(self.col3_label_3.sizePolicy().hasHeightForWidth())
+        self.col3_label_3.setSizePolicy(sizePolicy3)
+        self.col3_label_3.setMinimumSize(QSize(0, 30))
+        self.col3_label_3.setMaximumSize(QSize(16777215, 30))
+        self.col3_label_3.setStyleSheet(u"QLabel {\n"
+"	border: 1px solid rgb(85, 170, 255);\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"}")
+        self.col3_label_3.setAlignment(Qt.AlignCenter)
+
+        self.cols_grid.addWidget(self.col3_label_3, 0, 4, 1, 1)
+
+        self.col3_label_4 = QLabel(self.cols_grid_frame)
+        self.col3_label_4.setObjectName(u"col3_label_4")
+        sizePolicy3.setHeightForWidth(self.col3_label_4.sizePolicy().hasHeightForWidth())
+        self.col3_label_4.setSizePolicy(sizePolicy3)
+        self.col3_label_4.setMinimumSize(QSize(0, 30))
+        self.col3_label_4.setMaximumSize(QSize(16777215, 30))
+        self.col3_label_4.setStyleSheet(u"QLabel {\n"
+"	border: 1px solid rgb(85, 170, 255);\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"}")
+        self.col3_label_4.setAlignment(Qt.AlignCenter)
+
+        self.cols_grid.addWidget(self.col3_label_4, 0, 5, 1, 1)
+
+        self.col1_cb = QComboBox(self.cols_grid_frame)
         self.col1_cb.setObjectName(u"col1_cb")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.col1_cb.sizePolicy().hasHeightForWidth())
-        self.col1_cb.setSizePolicy(sizePolicy3)
+        sizePolicy2.setHeightForWidth(self.col1_cb.sizePolicy().hasHeightForWidth())
+        self.col1_cb.setSizePolicy(sizePolicy2)
         self.col1_cb.setMaximumSize(QSize(16777215, 30))
         self.col1_cb.setStyleSheet(u"QComboBox{\n"
 "	border: 1px solid rgb(85, 170, 255);\n"
@@ -1003,25 +1024,10 @@ class Ui_MainWindow(object):
 
         self.cols_grid.addWidget(self.col1_cb, 1, 0, 1, 1)
 
-        self.col3_label_2 = QLabel(self.importFile_page)
-        self.col3_label_2.setObjectName(u"col3_label_2")
-        sizePolicy2.setHeightForWidth(self.col3_label_2.sizePolicy().hasHeightForWidth())
-        self.col3_label_2.setSizePolicy(sizePolicy2)
-        self.col3_label_2.setMinimumSize(QSize(0, 30))
-        self.col3_label_2.setMaximumSize(QSize(16777215, 30))
-        self.col3_label_2.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(85, 170, 255);\n"
-"	background-color: rgb(13, 9, 36);\n"
-"	color: rgb(0, 170, 255);\n"
-"}")
-        self.col3_label_2.setAlignment(Qt.AlignCenter)
-
-        self.cols_grid.addWidget(self.col3_label_2, 0, 3, 1, 1)
-
-        self.col2_cb = QComboBox(self.importFile_page)
+        self.col2_cb = QComboBox(self.cols_grid_frame)
         self.col2_cb.setObjectName(u"col2_cb")
-        sizePolicy3.setHeightForWidth(self.col2_cb.sizePolicy().hasHeightForWidth())
-        self.col2_cb.setSizePolicy(sizePolicy3)
+        sizePolicy2.setHeightForWidth(self.col2_cb.sizePolicy().hasHeightForWidth())
+        self.col2_cb.setSizePolicy(sizePolicy2)
         self.col2_cb.setMaximumSize(QSize(16777215, 30))
         self.col2_cb.setStyleSheet(u"QComboBox{\n"
 "	border: 1px solid rgb(85, 170, 255);\n"
@@ -1037,10 +1043,10 @@ class Ui_MainWindow(object):
 
         self.cols_grid.addWidget(self.col2_cb, 1, 1, 1, 1)
 
-        self.col3_cb = QComboBox(self.importFile_page)
+        self.col3_cb = QComboBox(self.cols_grid_frame)
         self.col3_cb.setObjectName(u"col3_cb")
-        sizePolicy2.setHeightForWidth(self.col3_cb.sizePolicy().hasHeightForWidth())
-        self.col3_cb.setSizePolicy(sizePolicy2)
+        sizePolicy3.setHeightForWidth(self.col3_cb.sizePolicy().hasHeightForWidth())
+        self.col3_cb.setSizePolicy(sizePolicy3)
         self.col3_cb.setMinimumSize(QSize(0, 30))
         self.col3_cb.setMaximumSize(QSize(16777215, 30))
         self.col3_cb.setStyleSheet(u"QComboBox{\n"
@@ -1057,24 +1063,30 @@ class Ui_MainWindow(object):
 
         self.cols_grid.addWidget(self.col3_cb, 1, 2, 1, 1)
 
-        self.col1_label = QLabel(self.importFile_page)
-        self.col1_label.setObjectName(u"col1_label")
-        sizePolicy3.setHeightForWidth(self.col1_label.sizePolicy().hasHeightForWidth())
-        self.col1_label.setSizePolicy(sizePolicy3)
-        self.col1_label.setMaximumSize(QSize(16777215, 30))
-        self.col1_label.setStyleSheet(u"QLabel {\n"
+        self.col2_cb_2 = QComboBox(self.cols_grid_frame)
+        self.col2_cb_2.setObjectName(u"col2_cb_2")
+        sizePolicy3.setHeightForWidth(self.col2_cb_2.sizePolicy().hasHeightForWidth())
+        self.col2_cb_2.setSizePolicy(sizePolicy3)
+        self.col2_cb_2.setMinimumSize(QSize(0, 30))
+        self.col2_cb_2.setMaximumSize(QSize(16777215, 30))
+        self.col2_cb_2.setStyleSheet(u"QComboBox{\n"
 "	border: 1px solid rgb(85, 170, 255);\n"
 "	background-color: rgb(13, 9, 36);\n"
 "	color: rgb(0, 170, 255);\n"
+"}\n"
+"QComboBox QAbstractItemView {\n"
+"        color: rgb(0, 170, 255);  /* \u4e0b\u62c9\u9879\u6587\u672c\u989c\u8272 */\n"
+" }\n"
+"QComboBox QAbstractItemView::item:hover {\n"
+"        color: rgb(7, 255, 119); \n"
 "}")
-        self.col1_label.setAlignment(Qt.AlignCenter)
 
-        self.cols_grid.addWidget(self.col1_label, 0, 0, 1, 1)
+        self.cols_grid.addWidget(self.col2_cb_2, 1, 3, 1, 1)
 
-        self.col2_cb_5 = QComboBox(self.importFile_page)
+        self.col2_cb_5 = QComboBox(self.cols_grid_frame)
         self.col2_cb_5.setObjectName(u"col2_cb_5")
-        sizePolicy2.setHeightForWidth(self.col2_cb_5.sizePolicy().hasHeightForWidth())
-        self.col2_cb_5.setSizePolicy(sizePolicy2)
+        sizePolicy3.setHeightForWidth(self.col2_cb_5.sizePolicy().hasHeightForWidth())
+        self.col2_cb_5.setSizePolicy(sizePolicy3)
         self.col2_cb_5.setMinimumSize(QSize(0, 30))
         self.col2_cb_5.setMaximumSize(QSize(16777215, 30))
         self.col2_cb_5.setStyleSheet(u"QComboBox{\n"
@@ -1091,19 +1103,32 @@ class Ui_MainWindow(object):
 
         self.cols_grid.addWidget(self.col2_cb_5, 1, 4, 1, 1)
 
+        self.col2_cb_6 = QComboBox(self.cols_grid_frame)
+        self.col2_cb_6.setObjectName(u"col2_cb_6")
+        sizePolicy3.setHeightForWidth(self.col2_cb_6.sizePolicy().hasHeightForWidth())
+        self.col2_cb_6.setSizePolicy(sizePolicy3)
+        self.col2_cb_6.setMinimumSize(QSize(0, 30))
+        self.col2_cb_6.setMaximumSize(QSize(16777215, 30))
+        self.col2_cb_6.setStyleSheet(u"QComboBox{\n"
+"	border: 1px solid rgb(85, 170, 255);\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"}\n"
+"QComboBox QAbstractItemView {\n"
+"        color: rgb(0, 170, 255);  /* \u4e0b\u62c9\u9879\u6587\u672c\u989c\u8272 */\n"
+" }\n"
+"QComboBox QAbstractItemView::item:hover {\n"
+"        color: rgb(7, 255, 119); \n"
+"}")
 
-        self.verticalLayout_2.addLayout(self.cols_grid)
+        self.cols_grid.addWidget(self.col2_cb_6, 1, 5, 1, 1)
 
-        self.verticalSpacer_2 = QSpacerItem(848, 78, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_2.addWidget(self.cols_grid_frame)
+
+        self.verticalSpacer_2 = QSpacerItem(848, 97, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout_2.addItem(self.verticalSpacer_2)
-
-
-        self.horizontalLayout_13.addLayout(self.verticalLayout_2)
-
-        self.horizontalSpacer_4 = QSpacerItem(50, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_13.addItem(self.horizontalSpacer_4)
 
         self.stackedWidget.addWidget(self.importFile_page)
         self.kpi_page = QWidget()
@@ -1142,19 +1167,20 @@ class Ui_MainWindow(object):
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.frame = QFrame(self.topN_page)
         self.frame.setObjectName(u"frame")
-        sizePolicy3.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
-        self.frame.setSizePolicy(sizePolicy3)
-        self.frame.setMinimumSize(QSize(0, 50))
-        self.frame.setMaximumSize(QSize(16777215, 50))
+        sizePolicy2.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
+        self.frame.setSizePolicy(sizePolicy2)
+        self.frame.setMinimumSize(QSize(0, 60))
+        self.frame.setMaximumSize(QSize(16777215, 60))
         self.frame.setFrameShape(QFrame.StyledPanel)
         self.frame.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_9 = QHBoxLayout(self.frame)
+        self.horizontalLayout_16 = QHBoxLayout(self.frame)
+        self.horizontalLayout_16.setObjectName(u"horizontalLayout_16")
+        self.frame_2 = QFrame(self.frame)
+        self.frame_2.setObjectName(u"frame_2")
+        self.horizontalLayout_9 = QHBoxLayout(self.frame_2)
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
-        self.horizontalSpacer_9 = QSpacerItem(498, 17, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_9.addItem(self.horizontalSpacer_9)
-
-        self.label_6 = QLabel(self.frame)
+        self.horizontalLayout_9.setContentsMargins(40, -1, 40, -1)
+        self.label_6 = QLabel(self.frame_2)
         self.label_6.setObjectName(u"label_6")
         sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         sizePolicy4.setHorizontalStretch(0)
@@ -1171,15 +1197,15 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_9.addWidget(self.label_6)
 
-        self.yellow_num_QB = QSpinBox(self.frame)
+        self.yellow_num_QB = QSpinBox(self.frame_2)
         self.yellow_num_QB.setObjectName(u"yellow_num_QB")
         sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Maximum)
         sizePolicy5.setHorizontalStretch(0)
         sizePolicy5.setVerticalStretch(0)
         sizePolicy5.setHeightForWidth(self.yellow_num_QB.sizePolicy().hasHeightForWidth())
         self.yellow_num_QB.setSizePolicy(sizePolicy5)
-        self.yellow_num_QB.setMinimumSize(QSize(50, 25))
-        self.yellow_num_QB.setMaximumSize(QSize(50, 25))
+        self.yellow_num_QB.setMinimumSize(QSize(40, 25))
+        self.yellow_num_QB.setMaximumSize(QSize(40, 25))
         self.yellow_num_QB.setStyleSheet(u"QSpinBox{\n"
 "	border: 1px solid rgb(85, 170, 255);\n"
 "	background-color: rgb(13, 9, 36);\n"
@@ -1191,7 +1217,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_9.addWidget(self.yellow_num_QB)
 
-        self.label_7 = QLabel(self.frame)
+        self.label_7 = QLabel(self.frame_2)
         self.label_7.setObjectName(u"label_7")
         sizePolicy4.setHeightForWidth(self.label_7.sizePolicy().hasHeightForWidth())
         self.label_7.setSizePolicy(sizePolicy4)
@@ -1205,12 +1231,12 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_9.addWidget(self.label_7)
 
-        self.red_num_QB = QSpinBox(self.frame)
+        self.red_num_QB = QSpinBox(self.frame_2)
         self.red_num_QB.setObjectName(u"red_num_QB")
         sizePolicy5.setHeightForWidth(self.red_num_QB.sizePolicy().hasHeightForWidth())
         self.red_num_QB.setSizePolicy(sizePolicy5)
-        self.red_num_QB.setMinimumSize(QSize(50, 25))
-        self.red_num_QB.setMaximumSize(QSize(50, 25))
+        self.red_num_QB.setMinimumSize(QSize(40, 25))
+        self.red_num_QB.setMaximumSize(QSize(40, 25))
         self.red_num_QB.setStyleSheet(u"QSpinBox{\n"
 "	border: 1px solid rgb(85, 170, 255);\n"
 "	background-color: rgb(13, 9, 36);\n"
@@ -1222,7 +1248,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_9.addWidget(self.red_num_QB)
 
-        self.search_topN_bt = QPushButton(self.frame)
+        self.search_topN_bt = QPushButton(self.frame_2)
         self.search_topN_bt.setObjectName(u"search_topN_bt")
         sizePolicy6 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy6.setHorizontalStretch(0)
@@ -1248,6 +1274,111 @@ class Ui_MainWindow(object):
 "}")
 
         self.horizontalLayout_9.addWidget(self.search_topN_bt)
+
+
+        self.horizontalLayout_16.addWidget(self.frame_2)
+
+        self.line = QFrame(self.frame)
+        self.line.setObjectName(u"line")
+        self.line.setStyleSheet(u"background-color: rgb(85, 170, 255);")
+        self.line.setFrameShape(QFrame.VLine)
+        self.line.setFrameShadow(QFrame.Sunken)
+
+        self.horizontalLayout_16.addWidget(self.line)
+
+        self.frame_3 = QFrame(self.frame)
+        self.frame_3.setObjectName(u"frame_3")
+        self.horizontalLayout_13 = QHBoxLayout(self.frame_3)
+        self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
+        self.horizontalLayout_13.setContentsMargins(40, -1, 40, -1)
+        self.label_8 = QLabel(self.frame_3)
+        self.label_8.setObjectName(u"label_8")
+        sizePolicy4.setHeightForWidth(self.label_8.sizePolicy().hasHeightForWidth())
+        self.label_8.setSizePolicy(sizePolicy4)
+        self.label_8.setMinimumSize(QSize(0, 0))
+        self.label_8.setMaximumSize(QSize(16777215, 16777215))
+        self.label_8.setStyleSheet(u"QLabel {\n"
+"\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"}")
+
+        self.horizontalLayout_13.addWidget(self.label_8)
+
+        self.yellow_month_QB = QSpinBox(self.frame_3)
+        self.yellow_month_QB.setObjectName(u"yellow_month_QB")
+        sizePolicy5.setHeightForWidth(self.yellow_month_QB.sizePolicy().hasHeightForWidth())
+        self.yellow_month_QB.setSizePolicy(sizePolicy5)
+        self.yellow_month_QB.setMinimumSize(QSize(40, 25))
+        self.yellow_month_QB.setMaximumSize(QSize(40, 25))
+        self.yellow_month_QB.setStyleSheet(u"QSpinBox{\n"
+"	border: 1px solid rgb(85, 170, 255);\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"	border-radius: 5;\n"
+"}\n"
+"")
+        self.yellow_month_QB.setValue(12)
+
+        self.horizontalLayout_13.addWidget(self.yellow_month_QB)
+
+        self.label_9 = QLabel(self.frame_3)
+        self.label_9.setObjectName(u"label_9")
+        sizePolicy4.setHeightForWidth(self.label_9.sizePolicy().hasHeightForWidth())
+        self.label_9.setSizePolicy(sizePolicy4)
+        self.label_9.setMinimumSize(QSize(0, 0))
+        self.label_9.setMaximumSize(QSize(16777215, 16777215))
+        self.label_9.setStyleSheet(u"QLabel {\n"
+"\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"}")
+
+        self.horizontalLayout_13.addWidget(self.label_9)
+
+        self.red_month_QB = QSpinBox(self.frame_3)
+        self.red_month_QB.setObjectName(u"red_month_QB")
+        sizePolicy5.setHeightForWidth(self.red_month_QB.sizePolicy().hasHeightForWidth())
+        self.red_month_QB.setSizePolicy(sizePolicy5)
+        self.red_month_QB.setMinimumSize(QSize(40, 25))
+        self.red_month_QB.setMaximumSize(QSize(40, 25))
+        self.red_month_QB.setStyleSheet(u"QSpinBox{\n"
+"	border: 1px solid rgb(85, 170, 255);\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"	border-radius: 5;\n"
+"}\n"
+"")
+        self.red_month_QB.setValue(24)
+
+        self.horizontalLayout_13.addWidget(self.red_month_QB)
+
+        self.search_work_bt = QPushButton(self.frame_3)
+        self.search_work_bt.setObjectName(u"search_work_bt")
+        sizePolicy6.setHeightForWidth(self.search_work_bt.sizePolicy().hasHeightForWidth())
+        self.search_work_bt.setSizePolicy(sizePolicy6)
+        self.search_work_bt.setMinimumSize(QSize(100, 25))
+        self.search_work_bt.setMaximumSize(QSize(100, 25))
+        self.search_work_bt.setStyleSheet(u"QPushButton {\n"
+"	border: 1px solid rgb(85, 170, 255);\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	border-radius: 11;\n"
+"	color: rgb(0, 170, 255);\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"	background-color: rgb(85, 0, 255);\n"
+"	color: rgb(7, 255, 119);\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"	background-color: rgb(0, 0, 0);\n"
+"}")
+
+        self.horizontalLayout_13.addWidget(self.search_work_bt)
+
+
+        self.horizontalLayout_16.addWidget(self.frame_3)
 
 
         self.verticalLayout_7.addWidget(self.frame)
@@ -1312,8 +1443,8 @@ class Ui_MainWindow(object):
 
         self.bottomBar = QFrame(self.centralwidget)
         self.bottomBar.setObjectName(u"bottomBar")
-        sizePolicy2.setHeightForWidth(self.bottomBar.sizePolicy().hasHeightForWidth())
-        self.bottomBar.setSizePolicy(sizePolicy2)
+        sizePolicy3.setHeightForWidth(self.bottomBar.sizePolicy().hasHeightForWidth())
+        self.bottomBar.setSizePolicy(sizePolicy3)
         self.bottomBar.setMinimumSize(QSize(0, 40))
         self.bottomBar.setMaximumSize(QSize(16777215, 40))
         self.bottomBar.setStyleSheet(u"background-color: rgb(13, 9, 36);")
@@ -1451,7 +1582,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(3)
+        self.stackedWidget.setCurrentIndex(4)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -1479,14 +1610,18 @@ class Ui_MainWindow(object):
         self.cy_qb.setText(QCoreApplication.translate("MainWindow", u"\u57ce\u57df\u7f51", None))
         self.odf_qb.setText(QCoreApplication.translate("MainWindow", u"\u5149\u7f06ODF", None))
         self.iodf_qb.setText(QCoreApplication.translate("MainWindow", u"IODF", None))
-        self.col3_label_3.setText(QCoreApplication.translate("MainWindow", u"--", None))
+        self.col1_label.setText(QCoreApplication.translate("MainWindow", u"--", None))
         self.col2_label.setText(QCoreApplication.translate("MainWindow", u"--", None))
         self.col3_label.setText(QCoreApplication.translate("MainWindow", u"--", None))
         self.col3_label_2.setText(QCoreApplication.translate("MainWindow", u"--", None))
-        self.col1_label.setText(QCoreApplication.translate("MainWindow", u"--", None))
-        self.label_6.setText(QCoreApplication.translate("MainWindow", u"\u9884\u8b66\u95e8\u9650\u503c\uff08%\uff09\uff1a", None))
-        self.label_7.setText(QCoreApplication.translate("MainWindow", u"\u7d27\u5f20\u95e8\u9650\u503c\uff08%\uff09\uff1a", None))
-        self.search_topN_bt.setText(QCoreApplication.translate("MainWindow", u"\u67e5\u8be2", None))
+        self.col3_label_3.setText(QCoreApplication.translate("MainWindow", u"--", None))
+        self.col3_label_4.setText(QCoreApplication.translate("MainWindow", u"--", None))
+        self.label_6.setText(QCoreApplication.translate("MainWindow", u"\u9884\u8b66\u95e8\u9650\u503c(%):", None))
+        self.label_7.setText(QCoreApplication.translate("MainWindow", u"\u7d27\u5f20\u95e8\u9650\u503c(%):", None))
+        self.search_topN_bt.setText(QCoreApplication.translate("MainWindow", u"\u73b0\u7f51\u67e5\u8be2", None))
+        self.label_8.setText(QCoreApplication.translate("MainWindow", u"\u9884\u8b66\u95e8\u9650\u503c(\u6708):", None))
+        self.label_9.setText(QCoreApplication.translate("MainWindow", u"\u8d85\u671f\u95e8\u9650\u503c(\u6708):", None))
+        self.search_work_bt.setText(QCoreApplication.translate("MainWindow", u"\u5728\u5efa\u67e5\u8be2", None))
         self.import_status.setText("")
         self.home_bt.setText(QCoreApplication.translate("MainWindow", u"\u9996\u9875", None))
         self.topN_bt.setText(QCoreApplication.translate("MainWindow", u"\u9884\u8b66", None))

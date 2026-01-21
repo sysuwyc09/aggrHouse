@@ -102,9 +102,11 @@ class PieChartView(QChartView):
         # ]
         self.slice_labels = {
             '已用完': QColor(255, 0, 0),
+            '超期': QColor(255, 0, 0),
             '紧张': QColor(255, 215, 0),
             '预警': QColor(255, 255, 0),
             '充足': QColor(0, 255, 0),
+            '正常': QColor(0, 255, 0),
             '零利用率': QColor(255, 192, 203),
             '传输': QColor(255, 0, 0),
             '无线': QColor(255, 215, 0),
@@ -260,14 +262,17 @@ class BarChartView(QChartView):
         # 预定义颜色调色板
         self.color_palette = {
             '已用完': QColor(255, 0, 0),
+            '超期': QColor(255, 0, 0),
             '紧张': QColor(255, 215, 0),
             '预警': QColor(255, 255, 0),
             '充足': QColor(0, 255, 0),
+            '正常': QColor(0, 255, 0),
             '零利用率': QColor(255, 192, 203),
         }
         # 设置深色主题
         self.setDarkTheme()
         self.df = pd.DataFrame()
+        self.title_name = ''
     
     def setDarkTheme(self):
         """应用深色主题设置"""
@@ -281,6 +286,7 @@ class BarChartView(QChartView):
         功能：显示0值标签 + 所有标签在柱状图上方
         """
         # 清空图表原有内容（系列和坐标轴）
+        self.title_name = title
         self.df = df
         self.df['合计'] = self.df.iloc[:, 1:].sum(axis=1)
         self.df['合计'] = self.df['合计'].astype('str')

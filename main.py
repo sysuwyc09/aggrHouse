@@ -35,7 +35,7 @@ class Mainwin(QMainWindow, Ui_MainWindow):
         ]
         self.fileCols = [
             ['专业', '设备型号', '设备高度'],
-            ['所属区县', '所属站点', '机房名称', '业务级别', '生命周期状态'],
+            ['所属区县', '所属站点', '机房名称', '业务级别', '生命周期状态','入网时间'],
             ['所属机房',  '装机位置编号'],
             ['设备名称', '所属机房', '设备型号', '生命周期状态']
         ]
@@ -59,7 +59,7 @@ class Mainwin(QMainWindow, Ui_MainWindow):
         # TopN 页面按钮查询
         self.topN_bt.clicked.connect(self.pageSelect)
         self.search_topN_bt.clicked.connect(self.searchTopNHouse)
-
+        self.search_work_bt.clicked.connect(self.searchWorkHouse)
         # 初始页面为home页面
         self.stackedWidget.setCurrentIndex(0)
 
@@ -68,24 +68,86 @@ class Mainwin(QMainWindow, Ui_MainWindow):
         self.normal_pie.pieClicked.connect(self.onAggrHouseDetail)
         self.business_pie.pieClicked.connect(self.onAggrHouseDetail)
 
+    def searchWorkHouse(self):
+        yellow_num = self.yellow_month_QB.value()
+        red_num = self.red_month_QB.value()
+        if yellow_num >= red_num:
+            QMessageBox.information(self, '提示', '预警阈值应小于超期阈值')
+            return;
+        self.search_work_thread = queryWorkHouseThread(yellow_num,red_num)
+        self.search_work_thread.state_signal.connect(self.showStatus)
+        self.search_work_thread.area_signal.connect(self.showAreaCol)
+        self.search_work_thread.pie_signal.connect(self.showAllPie)
+        self.search_work_thread.dataframe_signal.connect(self.showWorkDataFrame)
+        self.search_work_thread.start()
+
+    def showWorkDataFrame(self, area_table,house_df,all_table):
+        self.device_df = area_table
+        self.rack_df = house_df
+        self.table_df = all_table
+        if house_df.shape[0] == 0:
+            QMessageBox.information(self, '提示', '没有符合条件的机房')
+            return;
+        self.showWorkTable(house_df)
+
+
+    def showWorkTable(self, work_df):
+        work_df = work_df[['所属区县','机房名称','业务级别','生命周期状态','入网时间','已入网时间(月)','建设情况']].copy().reset_index(drop=True)
+        work_df = work_df.astype(str)
+        self.topN_tw.setRowCount(work_df.shape[0])
+        cols = ['所属区县','机房名称','业务级别','生命周期状态','入网时间','已入网时间(月)','建设情况']
+        self.topN_tw.setColumnCount(work_df.shape[1])
+        self.topN_tw.setHorizontalHeaderLabels(cols)
+
+        # 机房名称列随内容扩展
+        self.topN_tw.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+
+        # 建设情况列隐藏
+        self.topN_tw.setColumnHidden(6, True)
+        for i in range(work_df.shape[0]):
+            # 颜色
+            if work_df.iloc[i, 6] == '超期':
+                color = 'red'
+            elif work_df.iloc[i, 6] == '预警':
+                # 橙色
+                color = 'orange'
+            elif work_df.iloc[i, 6] == '正常':
+                color = 'green'
+            else:
+                # 粉红色
+                color = 'pink'
+            for j in range(work_df.shape[1]):
+                item = QTableWidgetItem(str(work_df.iloc[i, j]))
+                item.setForeground(QColor(color))
+                self.topN_tw.setItem(i, j, item)
+
 
     def onAggrHouseDetail(self, title_name):
-        house_type = title_name.split('空间利用率')[0]
-        print(house_type)
+        house_type = title_name[:4]
+        # print(house_type)
         temp_df = self.rack_df.copy()
         temp_df = temp_df[temp_df['业务级别'] == house_type]
         self.stackedWidget.setCurrentIndex(4)
-        self.showTopNTable(temp_df)
+        if '利用率' in title_name:
+            self.showTopNTable(temp_df)
+        elif '在建情况' in title_name:
+            self.showWorkTable(temp_df)
 
     def onBarClicked(self, area_name, house_use_status):
         temp_df = self.rack_df.copy()
         temp_df = temp_df[temp_df['所属区县'] == area_name]
         if house_use_status != '全部':
-            temp_df = temp_df[temp_df['利用率状态'] == house_use_status]
+            if self.area_house_bar.title_name == '各区域汇聚机房利用率情况':
+                temp_df = temp_df[temp_df['利用率状态'] == house_use_status]
+            elif self.area_house_bar.title_name == '各区域汇聚机房在建情况':
+                temp_df = temp_df[temp_df['建设情况'] == house_use_status]
         if temp_df.shape[0] == 0:
             return;
         self.stackedWidget.setCurrentIndex(4)
-        self.showTopNTable(temp_df)
+        if self.area_house_bar.title_name == '各区域汇聚机房利用率情况':
+            self.showTopNTable(temp_df)
+        elif self.area_house_bar.title_name == '各区域汇聚机房在建情况':
+            self.showWorkTable(temp_df)
 
     # TopN 页面查询所有利用率机房
     def searchTopNHouse(self):
@@ -213,25 +275,16 @@ class Mainwin(QMainWindow, Ui_MainWindow):
             tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
 
-    # 全量机房查询
-    # def queryAllHouse(self):
-    #     self.query_all_thread = queryAllHouseThread()
-    #     self.query_all_thread.state_signal.connect(self.showStatus)
-    #     self.query_all_thread.area_signal.connect(self.showAreaCol)
-    #     self.query_all_thread.error_signal.connect(self.showError)
-    #     self.query_all_thread.pie_signal.connect(self.showAllPie)
-    #     self.query_all_thread.dataframe_signal.connect(self.showOneHouseDataFrame)
-    #     self.query_all_thread.start()
-
     # 饼状图 展示所有利用率机房分布
-    def showAllPie(self, important_dict,normal_dict,business_dict):
-        self.important_pie.setData(important_dict,'重要汇聚空间利用率分布')
-        self.normal_pie.setData(normal_dict,'普通汇聚空间利用率分布')
-        self.business_pie.setData(business_dict,'业务汇聚空间利用率分布')
+    def showAllPie(self, important_dict,normal_dict,business_dict,title):
+        # print(important_dict,normal_dict,business_dict,title)
+        self.important_pie.setData(important_dict,'重要汇聚'+title)
+        self.normal_pie.setData(normal_dict,'普通汇聚'+title)
+        self.business_pie.setData(business_dict,'业务汇聚'+title)
 
     # 柱状图显示各区域汇聚机房数
-    def showAreaCol(self, area_table):
-        self.area_house_bar.setData(area_table,'各区域汇聚机房利用率情况')
+    def showAreaCol(self, area_table,title):
+        self.area_house_bar.setData(area_table,title)
 
     def downLoadFile(self):
         # 生成文件名
@@ -303,7 +356,7 @@ class Mainwin(QMainWindow, Ui_MainWindow):
             self.type_frame.setVisible(False)
         self.currentCols = []
         self.currentLis = []
-        for col in range(0, 5):
+        for col in range(0, 6):
             self.cols_grid.itemAtPosition(0,col).widget().setText("- - - -")
             self.cols_grid.itemAtPosition(1,col).widget().clear()
         cols = self.fileCols[self.fileType_cb.currentIndex()]

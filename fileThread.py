@@ -168,13 +168,13 @@ class queryOneHouseThread(QThread):
             self.state_signal.emit(f"查询失败: {str(e)}")
 
 
-
+# 现网在用状态下的所有机房
 class queryAllHouseThread(QThread):
     # 定义两个信号
     state_signal = Signal(str)  # 状态信号
-    area_signal = Signal(pd.DataFrame)  # 区域机房数结果信号
+    area_signal = Signal(pd.DataFrame,str)  # 区域机房数结果信号
     error_signal = Signal(list)  # 错误信号
-    pie_signal = Signal(dict,dict,dict)  # 利用率结果信号
+    pie_signal = Signal(dict,dict,dict,str)  # 利用率结果信号
     dataframe_signal = Signal(pd.DataFrame,pd.DataFrame,pd.DataFrame)
 
     def __init__(self,yellow_num=60,red_num=80):
@@ -254,7 +254,7 @@ class queryAllHouseThread(QThread):
             business_table = business_table.reset_index()
             business_dict = business_table.set_index('利用率状态')['机房名称'].to_dict()
 
-            self.pie_signal.emit(important_dict,normal_dict,business_dict)
+            self.pie_signal.emit(important_dict,normal_dict,business_dict,'利用率状态分布')
 
             all_table = pd.pivot_table(house_df, index=['业务级别','利用率状态'], aggfunc={'机房名称':'count'})
             all_table = all_table.reset_index()
@@ -272,7 +272,7 @@ class queryAllHouseThread(QThread):
                 if col not in area_table.columns:
                     area_table[col] = 0
             area_table = area_table[cols]
-            self.area_signal.emit(area_table)
+            self.area_signal.emit(area_table,'各区域汇聚机房利用率情况')
 
             self.dataframe_signal.emit(device_df,house_df,all_table)
 
@@ -297,6 +297,97 @@ class queryAllHouseThread(QThread):
             return '充足'
         else:
             return '零利用率'
+
+# 工程在建状态的所有机房
+class queryWorkHouseThread(QThread):
+    # 定义信号
+    state_signal = Signal(str)  # 状态信号
+    area_signal = Signal(pd.DataFrame,str)  # 区域机房数结果信号
+    error_signal = Signal(list)  # 错误信号
+    pie_signal = Signal(dict,dict,dict,str)  # 利用率结果信号
+    dataframe_signal = Signal(pd.DataFrame,pd.DataFrame,pd.DataFrame)
+
+    def __init__(self,yellow_num=12,red_num=24):
+        super().__init__()
+        self.yellow_num = yellow_num
+        self.red_num = red_num
+    
+    def run(self):
+        try:
+            self.state_signal.emit("正在查询工程在建状态的所有机房..")
+            # 连接数据库 data/database.db
+            conn = sqlite3.connect('data/database.db')
+            # 执行查询
+            # 统计机房数
+            house_df = pd.read_sql("SELECT * FROM 汇聚机房", conn)
+            house_df = house_df[(house_df['生命周期状态']=='在建') | (house_df['生命周期状态']=='基础交维')]
+            conn.close()
+            self.state_signal.emit(f"共查询到{len(house_df)}个工程在建状态的机房")
+
+            # 统计已入网时间
+            house_df['入网时间'] = pd.to_datetime(house_df['入网时间'])
+            now = pd.Timestamp.now()
+            house_df['已入网时间(月)'] = round((now - house_df['入网时间']).dt.total_seconds() / (86400 * 30),2)
+            house_df['建设情况'] = house_df['已入网时间(月)'].apply(self.workStatus)
+            house_df = house_df.sort_values(by='已入网时间(月)', ascending=False)
+
+            # 重要汇聚
+            important_house_df = house_df[house_df['业务级别']=='重要汇聚'].copy()
+            important_table = pd.pivot_table(important_house_df, index='建设情况', aggfunc={'机房名称':'count'})
+            important_table = important_table.reset_index()
+            important_dict = important_table.set_index('建设情况')['机房名称'].to_dict()
+
+            # 普通汇聚
+            normal_house_df = house_df[house_df['业务级别']=='普通汇聚'].copy()
+            normal_table = pd.pivot_table(normal_house_df, index='建设情况', aggfunc={'机房名称':'count'})
+            normal_table = normal_table.reset_index()
+            normal_dict = normal_table.set_index('建设情况')['机房名称'].to_dict()
+            
+            # 业务汇聚
+            business_house_df = house_df[house_df['业务级别']=='业务汇聚'].copy()
+            business_table = pd.pivot_table(business_house_df, index='建设情况', aggfunc={'机房名称':'count'})
+            business_table = business_table.reset_index()
+            business_dict = business_table.set_index('建设情况')['机房名称'].to_dict()
+
+            self.pie_signal.emit(important_dict,normal_dict,business_dict,'在建情况分布')
+
+            all_table = pd.pivot_table(house_df, index=['业务级别','建设情况'], aggfunc={'机房名称':'count'})
+            all_table = all_table.reset_index()
+            all_table = all_table.rename(columns={'机房名称':'数量'})
+
+            # 按区域统计机房数量
+            area_table = pd.pivot_table(house_df,index='所属区县',columns='建设情况',aggfunc={'机房名称':'count'},fill_value=0)
+            area_table.columns = area_table.columns.droplevel(0)
+
+            area_sort_cols = ['赤坎区','麻章区','霞山区','坡头区','开发区','雷州市','廉江市','吴川市','遂溪县','徐闻县']
+            # area_table 按所属区县列 按area_sort_cols排序
+            area_table = area_table.loc[area_sort_cols].reset_index()
+            cols = ['所属区县','超期','预警','正常']
+            for col in cols:
+                if col not in area_table.columns:
+                    area_table[col] = 0
+            area_table = area_table[cols]
+            self.area_signal.emit(area_table,'各区域汇聚机房在建情况')
+
+
+            self.dataframe_signal.emit(area_table,house_df,all_table)
+
+            # 发送状态信号
+            self.state_signal.emit("查询成功")
+        # 发送结果信号
+        except Exception as e:
+            self.state_signal.emit(f"查询工程在建状态的所有机房失败: {str(e)}")
+
+
+    def workStatus(self,month):
+        if month >= self.red_num:
+            return '超期'
+        elif month >= self.yellow_num:
+            return '预警'
+        else:
+            return '正常'
+
+
 
         
 class writeXlsxThread(QThread):
