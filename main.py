@@ -287,12 +287,24 @@ class Mainwin(QMainWindow, Ui_MainWindow):
         self.area_house_bar.setData(area_table,title)
 
     def downLoadFile(self):
+        if self.rack_df.empty:
+            QMessageBox.information(self, '提示', '请先执行预警分析')
+            return;
         # 生成文件名
-        filename = f"机房设备及机架位查询结果_{time.strftime('%Y%m%d%H%M', time.localtime())}.xlsx"
+        if '利用率' in self.area_house_bar.title_name:
+            sheet1_name = '机房统计'
+            sheet2_name = '设备详细清单'
+            sheet3_name = '机房详细清单'
+            filename = f"机房设备及机架位查询结果_{time.strftime('%Y%m%d%H%M', time.localtime())}.xlsx"
+        else:
+            sheet1_name = '分级别统计'
+            sheet2_name = '分区域统计'
+            sheet3_name = '在建机房详细清单'
+            filename = f"工程在建汇聚机房查询结果_{time.strftime('%Y%m%d%H%M', time.localtime())}.xlsx"
         path = QFileDialog.getSaveFileName(self, '保存文件', f'结果/{filename}', 'Excel文件 (*.xlsx)')[0]
         if len(path) == 0:
             return;
-        self.write_xlsx_thread = writeXlsxThread(path,self.device_df,self.rack_df,self.table_df)
+        self.write_xlsx_thread = writeXlsxThread(path,self.device_df,self.rack_df,self.table_df,sheet1_name,sheet2_name,sheet3_name)
         self.write_xlsx_thread.state_signal.connect(self.showStatus)
         self.write_xlsx_thread.start()
 

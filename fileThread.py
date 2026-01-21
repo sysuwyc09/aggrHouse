@@ -393,20 +393,23 @@ class queryWorkHouseThread(QThread):
 class writeXlsxThread(QThread):
     # 定义两个信号
     state_signal = Signal(str)  # 状态信号
-    def __init__(self,path, device_df,rack_df,table_df):
+    def __init__(self,path, device_df,rack_df,table_df,sheet1_name,sheet2_name,sheet3_name):
         super().__init__()
         self.path = path
         self.device_df = device_df
         self.rack_df = rack_df
         self.table_df = table_df
+        self.sheet1_name = sheet1_name
+        self.sheet2_name = sheet2_name
+        self.sheet3_name = sheet3_name
     def run(self):
         try:
             self.state_signal.emit("正在写入结果文件Excel..")
             # 写入Excel
             with pd.ExcelWriter(self.path) as writer:
-                self.table_df.to_excel(writer, sheet_name='机房统计', index=False)
-                self.device_df.to_excel(writer, sheet_name='设备详细清单', index=False)
-                self.rack_df.to_excel(writer, sheet_name='机房详细清单', index=False)
+                self.table_df.to_excel(writer, sheet_name=self.sheet1_name, index=False)
+                self.device_df.to_excel(writer, sheet_name=self.sheet2_name, index=False)
+                self.rack_df.to_excel(writer, sheet_name=self.sheet3_name, index=False)
             self.state_signal.emit("写入Excel成功")
         except Exception as e:
             self.state_signal.emit(f"写入Excel失败: {str(e)}")
