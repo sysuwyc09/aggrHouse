@@ -887,18 +887,6 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_5.addWidget(self.cy_qb)
 
-        self.odf_qb = QRadioButton(self.type_frame)
-        self.odf_qb.setObjectName(u"odf_qb")
-        self.odf_qb.setStyleSheet(u"color: rgb(0, 170, 255);")
-
-        self.horizontalLayout_5.addWidget(self.odf_qb)
-
-        self.iodf_qb = QRadioButton(self.type_frame)
-        self.iodf_qb.setObjectName(u"iodf_qb")
-        self.iodf_qb.setStyleSheet(u"color: rgb(0, 170, 255);")
-
-        self.horizontalLayout_5.addWidget(self.iodf_qb)
-
 
         self.verticalLayout_2.addWidget(self.type_frame)
 
@@ -1582,7 +1570,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -1608,8 +1596,6 @@ class Ui_MainWindow(object):
         self.cs_qb.setText(QCoreApplication.translate("MainWindow", u"\u4f20\u8f93", None))
         self.wx_qb.setText(QCoreApplication.translate("MainWindow", u"\u65e0\u7ebf", None))
         self.cy_qb.setText(QCoreApplication.translate("MainWindow", u"\u57ce\u57df\u7f51", None))
-        self.odf_qb.setText(QCoreApplication.translate("MainWindow", u"\u5149\u7f06ODF", None))
-        self.iodf_qb.setText(QCoreApplication.translate("MainWindow", u"IODF", None))
         self.col1_label.setText(QCoreApplication.translate("MainWindow", u"--", None))
         self.col2_label.setText(QCoreApplication.translate("MainWindow", u"--", None))
         self.col3_label.setText(QCoreApplication.translate("MainWindow", u"--", None))

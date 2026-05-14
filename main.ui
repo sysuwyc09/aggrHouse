@@ -534,7 +534,7 @@ QPushButton:pressed {
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>0</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="home_page">
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -1450,26 +1450,6 @@ QPushButton:pressed {
                 </property>
                 <property name="text">
                  <string>城域网</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="odf_qb">
-                <property name="styleSheet">
-                 <string notr="true">color: rgb(0, 170, 255);</string>
-                </property>
-                <property name="text">
-                 <string>光缆ODF</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="iodf_qb">
-                <property name="styleSheet">
-                 <string notr="true">color: rgb(0, 170, 255);</string>
-                </property>
-                <property name="text">
-                 <string>IODF</string>
                 </property>
                </widget>
               </item>

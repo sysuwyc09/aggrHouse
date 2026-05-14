@@ -31,13 +31,16 @@ class Mainwin(QMainWindow, Ui_MainWindow):
         self.home_bt.clicked.connect(self.pageSelect)
         self.kpi_bt.clicked.connect(self.pageSelect)
         self.fileTypeCols = [
-            '设备高度', '汇聚机房', '机架位', '设备清单'
+            '设备高度', '汇聚机房', '机架位', '设备清单', '空调清单', 'ODF清单', 'IODF清单'
         ]
         self.fileCols = [
             ['专业', '设备型号', '设备高度'],
             ['所属区县', '所属站点', '机房名称', '业务级别', '生命周期状态','入网时间','机房使用面积（m2）'],
             ['所属机房',  '装机位置编号', '所在行'],
-            ['设备名称', '所属机房', '设备型号', '生命周期状态']
+            ['设备名称', '所属机房', '设备型号', '生命周期状态'],
+            ['设备名称', '所属机房', '设备型号', '使用状态'],
+            ['设施名称', '所属机房'],
+            ['设施名称', '所属机房'],
         ]
         # 类型页面初始隐藏
         self.type_frame.setVisible(False)

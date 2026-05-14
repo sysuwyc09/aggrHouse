@@ -476,4 +476,3 @@ class SearchTableThread(QThread):
         self.state_signal.emit("查询数据库结构成功")
         # except Exception as e:
         #     self.state_signal.emit(f"查询数据库结构失败: {str(e)}")
-
