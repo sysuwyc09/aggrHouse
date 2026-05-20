@@ -1,7 +1,8 @@
 from PySide6.QtCore import QThread, Signal
 import pandas as pd
 import sqlite3
-
+import math
+import datetime
 class FileImportThread(QThread):
     # 定义两个信号
     state_signal = Signal(str)  # 状态信号
@@ -77,8 +78,28 @@ class writeDataBaseThread(QThread):
                     existing_df = existing_df[existing_df['专业'] != major]
                     self.df = pd.concat([self.df, existing_df], ignore_index=True)
                     self.df.to_sql(self.table_name, conn, if_exists='replace', index=False)
-                    
+            else:
+                # 其他表直接写入
+                self.df.to_sql(self.table_name, conn, if_exists='replace', index=False)
+            # 判断数据库是否有table_update_records表
+            if 'table_update_records' not in pd.read_sql("SELECT name FROM sqlite_master WHERE type='table';", conn)['name'].values:
+                # 不存在则创建
+                pd.DataFrame(columns=['表名','更新时间']).to_sql('table_update_records', conn, if_exists='replace', index=False)
+            # 先查一下这条记录是否存在
+            check_sql = f"SELECT 1 FROM table_update_records WHERE 表名='{self.table_name}';"
+            exists = len(pd.read_sql(check_sql, conn)) > 0
+            # 获取当前时间
+            now_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            if exists:
+                # 存在 → 更新
+                update_sql = f"UPDATE table_update_records SET 更新时间='{now_time}' WHERE 表名='{self.table_name}';"
+                conn.execute(update_sql)
+            else:
+                # 不存在 → 插入（你原来漏掉了这个！）
+                insert_sql = f"INSERT INTO table_update_records (表名, 更新时间) VALUES ('{self.table_name}', '{now_time}');"
+                conn.execute(insert_sql)
             conn.commit()
+            
             conn.close()
             self.state_signal.emit("写入数据库成功")
         except Exception as e:
@@ -119,53 +140,143 @@ class searchDataBaseThread(QThread):
 
 
 class queryOneHouseThread(QThread):
-    # 定义两个信号
+    # 定义信号
     state_signal = Signal(str)  # 状态信号
     result_signal = Signal(dict, dict)  # 列名和数据信号
     percent_signal = Signal(float)  # 机房利用率信号
     error_signal = Signal(list)  # 错误信号
+    occupied_detail_signal = Signal(pd.DataFrame)  # 各类型占用面积详情信号
 
     def __init__(self, house_name):
         super().__init__()
         self.house_name = house_name
     
     def run(self):
-        try:
-            self.state_signal.emit("正在查询数据库..")
-            # 连接数据库
-            conn = sqlite3.connect('data/database.db')
-            rack_df = pd.read_sql(f"SELECT * FROM 机架位 WHERE 所属机房='{self.house_name}';", conn)
-            total_high_num = rack_df.shape[0] * 45
-            if total_high_num == 0:
-                self.state_signal.emit("查询失败: 该机房不存在")
-                return;
-            device_df = pd.read_sql(f"SELECT * FROM 设备清单 WHERE 所属机房='{self.house_name}';", conn)
-            device_high_df = pd.read_sql(f"SELECT * FROM 设备高度", conn)
-            device_df = device_df.astype('str')
-            # 删除生命周期状态包含 已拆除 的行
-            device_df = device_df[~device_df['生命周期状态'].str.contains('已拆除')]
-            device_df = device_df[device_df['设备型号']!='None']
-            device_df = pd.merge(device_df, device_high_df, on=['专业', '设备型号'], how='left')
-            # 找出设备为空的行
-            empty_device_df = device_df[device_df['设备高度'].isnull()]
-            # 如果存在设备为空的行，将这些行的专业和设备型号添加到错误列表中
-            if not empty_device_df.empty:
-                error_list = empty_device_df[['专业', '设备型号']].drop_duplicates().values.tolist()
-                self.error_signal.emit(error_list)
-                return;
+        # try:
+        self.state_signal.emit("正在查询数据库..")
+        conn = sqlite3.connect('data/database.db')
+        house_info_df = pd.read_sql(f"SELECT * FROM 汇聚机房 WHERE 机房名称='{self.house_name}';", conn)
+        if house_info_df.empty:
+            self.state_signal.emit("查询失败: 该机房不存在")
+            conn.close()
+            return  
+        business_level = house_info_df.iloc[0]['业务级别']
+        house_area = float(house_info_df.iloc[0]['机房使用面积（m2）']) if not pd.isnull(house_info_df.iloc[0]['机房使用面积（m2）']) else 0
+        if house_area == 0:
+            self.state_signal.emit("查询失败: 机房使用面积为0")
+            conn.close()
+            return
+        
+        device_df = pd.read_sql(f"SELECT * FROM 设备清单 WHERE 所属机房='{self.house_name}';", conn)
+        device_high_df = pd.read_sql(f"SELECT * FROM 设备高度", conn)
+        device_df = device_df.astype('str')
+        device_df = device_df[~device_df['生命周期状态'].str.contains('已拆除')]
+        device_df = device_df[device_df['设备型号']!='None']
+        device_df = pd.merge(device_df, device_high_df, on=['专业', '设备型号'], how='left')
+        
+        empty_device_df = device_df[device_df['设备高度'].isnull()]
+        # 如果存在设备为空的行，将这些行的专业和设备型号添加到错误列表中
+        if not empty_device_df.empty:
+            error_list = empty_device_df[['专业', '设备型号']].drop_duplicates().values.tolist()
+            self.error_signal.emit(error_list)
+            conn.close()
+            return
+        
+        if device_df.empty:
+            major_count_dict = {}
+            major_height_dict = {}
+        else:
             major_table = pd.pivot_table(device_df, index='专业', aggfunc={'设备名称':'count','设备高度':'sum'})
             major_table = major_table.reset_index()
             major_count_dict = major_table.set_index('专业')['设备名称'].to_dict()
             major_height_dict = major_table.set_index('专业')['设备高度'].to_dict()
-            self.result_signal.emit(major_count_dict, major_height_dict)
-            # 计算利用率
-            use_high_num = device_df['设备高度'].astype(float).sum()
-            use_percent = round(use_high_num / total_high_num * 100, 2)
-            self.percent_signal.emit(use_percent)
-            
-            self.state_signal.emit("查询数据库完成..")
-        except Exception as e:
-            self.state_signal.emit(f"查询失败: {str(e)}")
+        self.result_signal.emit(major_count_dict, major_height_dict)
+        
+        # 设备占用面积计算
+        total_device_height = device_df['设备高度'].astype(float).sum()
+        racks_needed = math.ceil(total_device_height / 45)
+        device_area = racks_needed * 1.08
+        
+        # 列头柜面积
+        rack_df = pd.read_sql(f"SELECT DISTINCT 所在行 FROM 机架位 WHERE 所属机房='{self.house_name}';", conn)
+        rows_count = rack_df.shape[0]
+        header_cabinet_area = rows_count * 2.16
+        
+        # ODF面积
+        odf_df = pd.read_sql(f"SELECT * FROM ODF清单 WHERE 所属机房='{self.house_name}';", conn)
+        odf_count = odf_df.shape[0]
+        odf_area = odf_count * 0.54
+        
+        # IODF面积
+        iodf_df = pd.read_sql(f"SELECT * FROM IODF清单 WHERE 所属机房='{self.house_name}';", conn)
+        iodf_count = iodf_df.shape[0]
+        iodf_area = iodf_count * 0.54
+        
+        # 动力配套维护面积
+        if business_level == '业务汇聚':
+            power_area = 6
+        elif business_level == '普通汇聚':
+            power_area = 10
+        elif business_level == '重要汇聚':
+            power_area = 20
+        else:
+            power_area = 0
+        
+        # 空调面积
+        ac_df = pd.read_sql(f"SELECT * FROM 空调清单 WHERE 所属机房='{self.house_name}';", conn)
+        ac_count = ac_df.shape[0]
+        ac_area = ac_count * 1.0
+        
+        # 室内油机面积,忽略不计
+        # if business_level == '业务汇聚':
+        #     oil_engine_area = 10
+        # elif business_level == '普通汇聚':
+        #     oil_engine_area = 15
+        # elif business_level == '重要汇聚':
+        #     oil_engine_area = 40
+        # else:
+        #     oil_engine_area = 0
+        
+        # # 外电占用面积
+        # if business_level == '重要汇聚':
+        #     external_power_area = 55
+        # else:
+        #     external_power_area = 0
+        
+        # 计算总面积
+        
+        # total_occupied_area = round(device_area + header_cabinet_area + odf_area + iodf_area + power_area + ac_area + external_power_area, 2) 
+        total_occupied_area = round(device_area + header_cabinet_area + odf_area + iodf_area + power_area + ac_area, 2) 
+        
+        # 计算利用率
+        use_percent = round(total_occupied_area / house_area * 100, 2)
+        self.percent_signal.emit(use_percent)
+
+        occupied_detail_df = pd.DataFrame([[
+            round(device_area, 2),
+            round(header_cabinet_area, 2),
+            round(odf_area, 2),
+            round(iodf_area, 2),
+            round(power_area, 2),
+            round(ac_area, 2),
+            round(total_occupied_area, 2),
+            round(house_area, 2),
+        ]], columns=[
+            '设备占用面积',
+            '列头柜面积',
+            'ODF面积',
+            'IODF面积',
+            '动力配套维护面积',
+            '空调面积',
+            '总面积',
+            '总机房面积',
+        ])
+        self.occupied_detail_signal.emit(occupied_detail_df)
+        
+        conn.close()
+        self.state_signal.emit("查询数据库完成..")
+        # except Exception as e:
+        #     self.state_signal.emit(f"查询失败: {str(e)}")
 
 
 # 现网在用状态下的所有机房
@@ -181,24 +292,73 @@ class queryAllHouseThread(QThread):
         super().__init__()
         self.yellow_num = yellow_num
         self.red_num = red_num
+        
+    def calculate_occupied_area(self, house_name, business_level, conn):
+        device_df = pd.read_sql(f"SELECT * FROM 设备清单 WHERE 所属机房='{house_name}';", conn)
+        device_df = device_df.astype('str')
+        device_df = device_df[~device_df['生命周期状态'].str.contains('已拆除')]
+        device_df = device_df[device_df['设备型号']!='None']
+        
+        device_high_df = pd.read_sql("SELECT * FROM 设备高度", conn)
+        device_df = device_df.merge(device_high_df, on=['专业', '设备型号'], how='left')
+        
+        total_device_height = device_df['设备高度'].astype(float).sum()
+        racks_needed = math.ceil(total_device_height / 45) if total_device_height > 0 else 0
+        device_area = racks_needed * 1.08
+        
+        rack_df = pd.read_sql(f"SELECT DISTINCT 所在行 FROM 机架位 WHERE 所属机房='{house_name}';", conn)
+        rows_count = rack_df.shape[0]
+        header_cabinet_area = rows_count * 2.16
+        
+        odf_df = pd.read_sql(f"SELECT * FROM ODF清单 WHERE 所属机房='{house_name}';", conn)
+        odf_count = odf_df.shape[0]
+        odf_area = odf_count * 0.54
+        
+        iodf_df = pd.read_sql(f"SELECT * FROM IODF清单 WHERE 所属机房='{house_name}';", conn)
+        iodf_count = iodf_df.shape[0]
+        iodf_area = iodf_count * 0.54
+        
+        if business_level == '业务汇聚':
+            power_area = 6
+        elif business_level == '普通汇聚':
+            power_area = 10
+        elif business_level == '重要汇聚':
+            power_area = 20
+        else:
+            power_area = 0
+        
+        ac_df = pd.read_sql(f"SELECT * FROM 空调清单 WHERE 所属机房='{house_name}';", conn)
+        ac_count = ac_df.shape[0]
+        ac_area = ac_count * 1.0
+        
+        # if business_level == '业务汇聚':
+        #     oil_engine_area = 10
+        # elif business_level == '普通汇聚':
+        #     oil_engine_area = 15
+        # elif business_level == '重要汇聚':
+        #     oil_engine_area = 40
+        # else:
+        #     oil_engine_area = 0
+        
+        # if business_level == '重要汇聚':
+        #     external_power_area = 55
+        # else:
+        #     external_power_area = 0
+        
+        # total_occupied = device_area + header_cabinet_area + odf_area + iodf_area + power_area + ac_area + oil_engine_area + external_power_area
+        # total_occupied = round(device_area + header_cabinet_area + odf_area + iodf_area + power_area + ac_area + external_power_area, 2)    
+        total_occupied = round(device_area + header_cabinet_area + odf_area + iodf_area + power_area + ac_area, 2)
+        return total_occupied
+
     def run(self):
         try:
             self.state_signal.emit("正在查询数据库..")
             # 连接数据库
             conn = sqlite3.connect('data/database.db')
-            # 执行查询
-            # 统计机房数
+            
             house_df = pd.read_sql("SELECT * FROM 汇聚机房", conn)
             house_df = house_df[house_df['生命周期状态']=='现网在用']
-            # area_table = pd.pivot_table(house_df, index=['所属区县','业务级别'], aggfunc={'机房名称':'count'})
-            # area_table = area_table.reset_index()
-            # area_grped = area_table.groupby('所属区县')
-            # area_dict = {}
-            # for name, group in area_grped:
-            #     area_dict[name] = group.set_index('业务级别')['机房名称'].to_dict()
-            # self.area_signal.emit(area_dict)
-
-            # 统计设备数
+            
             device_df = pd.read_sql("SELECT * FROM 设备清单", conn)
             device_df = device_df.rename(columns={'所属机房':'机房名称'})
             device_df = device_df.merge(house_df[['机房名称']], on='机房名称')
@@ -206,33 +366,24 @@ class queryAllHouseThread(QThread):
 
             # 垃圾数据清理
             device_df = device_df[device_df['设备型号']!='None']
-
             device_df = device_df[~device_df['生命周期状态'].str.contains('已拆除')]
+            
             device_height_df = pd.read_sql("SELECT * FROM 设备高度", conn)
             device_df = device_df.merge(device_height_df, on=['专业', '设备型号'], how='left')
-
+            
             empty_device_df = device_df[device_df['设备高度'].isnull()]
-            # 识别是否有未录入高度设施
             if not empty_device_df.empty:
                 error_list = empty_device_df[['专业', '设备型号']].drop_duplicates().values.tolist()
                 self.error_signal.emit(error_list)
-                return;
-            use_table = pd.pivot_table(device_df, index='机房名称', aggfunc={'设备高度':'sum'})
-            use_table = use_table.reset_index()
-            use_table = use_table.rename(columns={'设备高度':'已用设施高度'})
-
-
-            rack_df = pd.read_sql("SELECT * FROM 机架位", conn)
-            rack_table = pd.pivot_table(rack_df, index='所属机房', aggfunc={'装机位置编号':'count'})
-            rack_table = rack_table.reset_index()
-            rack_table = rack_table.rename(columns={'装机位置编号':'机架数','所属机房':'机房名称'})
-            house_df = house_df.merge(rack_table, on='机房名称',how='left')
-            house_df['机架数'] = house_df['机架数'].fillna(1)
-            house_df['可装设施高度'] = house_df['机架数'] * 45
-
-            house_df = house_df.merge(use_table, on='机房名称',how='left')
-            house_df['已用设施高度'] = house_df['已用设施高度'].fillna(0)
-            house_df['利用率'] = round(house_df['已用设施高度'] / house_df['可装设施高度'] * 100, 2)
+                conn.close()
+                return
+            
+            house_df['占用面积'] = house_df.apply(lambda row: self.calculate_occupied_area(row['机房名称'], row['业务级别'], conn), axis=1)
+            house_df['机房使用面积（m2）'] = house_df['机房使用面积（m2）'].fillna(0).astype(float)
+            house_df = house_df.rename(columns={'机房使用面积（m2）':'机房面积'})
+            
+            house_df['利用率'] = round(house_df['占用面积'] / house_df['机房面积'] * 100, 2)
+            house_df['利用率'] = house_df['利用率'].fillna(0)
             house_df['利用率状态'] = house_df['利用率'].apply(self.isUse)
             house_df = house_df.sort_values(by='利用率', ascending=False)
 
@@ -414,65 +565,93 @@ class writeXlsxThread(QThread):
         except Exception as e:
             self.state_signal.emit(f"写入Excel失败: {str(e)}")
 
-# 查找数据库结构类，返回数据库表名列表，各表数据行数
+# 查找数据库结构类，返回数据库表名列表，表行数，字段及类型，表更新时间
 class SearchTableThread(QThread):
-    # 定义两个信号
-    state_signal = Signal(str)  # 状态信号
-    table_signal = Signal(list)  # 表名信号
-    dataframe_signal = Signal(pd.DataFrame,pd.DataFrame,pd.DataFrame,pd.DataFrame)  # 区域机房数结果信号    
+    state_signal = Signal(str)
+    dataframe_signal = Signal(pd.DataFrame)
     
     def __init__(self):
         super().__init__()
     
     def run(self):
-        # try:
-        self.state_signal.emit("正在查询数据库结构..")
-        # 连接数据库 data/database.db
-        conn = sqlite3.connect('data/database.db')
-        cursor = conn.cursor()
-        # 查询数据库表名
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-        tables = cursor.fetchall()
-        table_names = [table[0] for table in tables]
-        # 发送表名信号
-        self.table_signal.emit(table_names)
-        if '设备高度' in table_names:
-            # 查询设备高度表数据
-            device_high_df = pd.read_sql("SELECT * FROM 设备高度", conn)
-            device_high_table = pd.pivot_table(device_high_df, index='专业', aggfunc={'设备型号':'count'})
-            device_high_table = device_high_table.reset_index()
-            device_high_table = device_high_table.rename(columns={'设备型号':'设备型号数'})
-        else:
-            device_high_table = pd.DataFrame(columns=['专业', '设备型号数'])
-        if '汇聚机房' in table_names:
-            # 查询汇聚机房表数据
-            house_df = pd.read_sql("SELECT * FROM 汇聚机房", conn)
-            house_table = pd.pivot_table(house_df, index=['业务级别','生命周期状态'], aggfunc={'机房名称':'count'})
-            house_table = house_table.reset_index()
-            house_table = house_table.rename(columns={'机房名称':'机房数'})
-        else:
-            house_table = pd.DataFrame(columns=['业务级别','生命周期状态', '机房数'])
-        if '设备清单' in table_names:
-            # 查询设备清单表数据
-            net_df = pd.read_sql("SELECT * FROM 设备清单", conn)
-            net_table = pd.pivot_table(net_df, index=['专业','设备型号'], aggfunc={'设备名称':'count'})
-            net_table = net_table.reset_index()
-            net_table = net_table.rename(columns={'设备名称':'设备数'})
-        else:
-            net_table = pd.DataFrame(columns=['专业','设备型号', '设备数'])
-        if '机架位' in table_names:
-            # 查询机架位表数据
-            rack_df = pd.read_sql("SELECT * FROM 机架位", conn)
-            rack_table = pd.pivot_table(rack_df, index=['所属机房'], aggfunc={'装机位置编号':'count'})
-            rack_table = rack_table.reset_index()
-            rack_table = rack_table.rename(columns={'所属机房':'机房名称','装机位置编号':'机架位数'})
-        else:
-            rack_table = pd.DataFrame(columns=['机房名称','机架位数'])
-        self.dataframe_signal.emit(device_high_table,house_table,rack_table,net_table)
+        try:
+            self.state_signal.emit("正在查询数据库结构..")
+            conn = sqlite3.connect('data/database.db')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+            tables = cursor.fetchall()
+            table_names = [table[0] for table in tables]
+            
+            table_info_list = []
+            for table_name in table_names:
+                cursor.execute(f"PRAGMA table_info({table_name});")
+                columns_info = cursor.fetchall()
+                column_types = {col[1]: col[2] for col in columns_info}
+                column_str = ', '.join([f"{name}({ctype})" for name, ctype in column_types.items()])
+                
+                cursor.execute(f"SELECT COUNT(*) FROM {table_name};")
+                row_count = cursor.fetchone()[0]
+                
+                table_info_list.append({
+                    '表名': table_name,
+                    '行数': row_count,
+                    '字段及类型': column_str
+                })
+            
+            table_info_df = pd.DataFrame(table_info_list)
+            
+            update_records_df = pd.read_sql("SELECT * FROM table_update_records", conn)
+            table_info_df = table_info_df.merge(
+                    update_records_df[['表名', '更新时间']], 
+                    on='表名', 
+                    how='left')
 
-        # 关闭数据库连接
-        conn.close()
-        # 发送状态信号
-        self.state_signal.emit("查询数据库结构成功")
-        # except Exception as e:
-        #     self.state_signal.emit(f"查询数据库结构失败: {str(e)}")
+            
+            conn.close()
+            self.dataframe_signal.emit(table_info_df)
+            self.state_signal.emit("查询数据库结构成功")
+        except Exception as e:
+            self.state_signal.emit(f"查询数据库结构失败: {str(e)}")
+
+
+class ClearTableThread(QThread):
+    state_signal = Signal(str)
+    
+    def __init__(self, table_name):
+        super().__init__()
+        self.table_name = table_name
+    
+    def run(self):
+        try:
+            self.state_signal.emit(f"正在清空表 {self.table_name}..")
+            conn = sqlite3.connect('data/database.db')
+            cursor = conn.cursor()
+            cursor.execute(f"DELETE FROM {self.table_name};")
+            conn.commit()
+            conn.close()
+            self.state_signal.emit(f"表 {self.table_name} 已清空")
+        except Exception as e:
+            self.state_signal.emit(f"清空表失败: {str(e)}")
+
+
+class DownloadTableThread(QThread):
+    state_signal = Signal(str)
+    
+    def __init__(self, table_name, save_path):
+        super().__init__()
+        self.table_name = table_name
+        self.save_path = save_path
+    
+    def run(self):
+        try:
+            self.state_signal.emit(f"正在下载表 {self.table_name}..")
+            conn = sqlite3.connect('data/database.db')
+            df = pd.read_sql(f"SELECT * FROM {self.table_name}", conn)
+            conn.close()
+            
+            file_path = f"{self.save_path}/{self.table_name}.xlsx"
+            df.to_excel(file_path, index=False)
+            self.state_signal.emit(f"表 {self.table_name} 已下载到 {file_path}")
+        except Exception as e:
+            self.state_signal.emit(f"下载表失败: {str(e)}")

@@ -286,10 +286,6 @@ class Ui_MainWindow(object):
         self.home_page.setObjectName(u"home_page")
         self.verticalLayout_3 = QVBoxLayout(self.home_page)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.verticalSpacer_4 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-
-        self.verticalLayout_3.addItem(self.verticalSpacer_4)
-
         self.horizontalLayout_10 = QHBoxLayout()
         self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
         self.keys_le = QLineEdit(self.home_page)
@@ -357,10 +353,6 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_3.addLayout(self.horizontalLayout_10)
 
-        self.verticalSpacer_6 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-
-        self.verticalLayout_3.addItem(self.verticalSpacer_6)
-
         self.horizontalLayout_11 = QHBoxLayout()
         self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
         self.ne_num_pie = PieChartView(self.home_page)
@@ -384,49 +376,59 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_3.addLayout(self.horizontalLayout_11)
 
-        self.verticalSpacer_5 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        self.detail_table_tw = QTableWidget(self.home_page)
+        self.detail_table_tw.setObjectName(u"detail_table_tw")
+        self.detail_table_tw.setStyleSheet(u"QTableWidget {\n"
+"    border: 1px solid rgb(85, 170, 255);\n"
+"    background-color: rgb(13, 9, 36);\n"
+"    gridline-color: rgb(85, 170, 255); /* \u8868\u683c\u7ebf\u989c\u8272 */\n"
+"    color: rgb(0, 170, 255);\n"
+"}\n"
+"\n"
+"QTableWidget::item {\n"
+"    color: rgb(0, 170, 255);\n"
+"    background-color: rgb(13, 9, 36);\n"
+"}\n"
+"\n"
+"QTableWidget::item:selected {\n"
+"    background-color: rgba(0, 170, 255, 50); /* \u9009\u4e2d\u534a\u900f\u660e */\n"
+"    color: rgb(7, 255, 119); /* \u9009\u4e2d\u6587\u5b57\u7eff\u8272\uff08\u548c\u4f60 hover \u989c\u8272\u7edf\u4e00\uff09*/\n"
+"}\n"
+"\n"
+"QHeaderView::section {\n"
+"    background-color: rgb(13, 9, 36);\n"
+"    border: 1px solid rgb(85, 170, 255);\n"
+"    color: rgb(0, 170, 255);\n"
+"}\n"
+"\n"
+"QHeaderView::section:selected {\n"
+"    color: rgb(7, 255, 119);\n"
+"}\n"
+"\n"
+"QScrollBar:vertical {\n"
+"    background-color: rgb(13, 9, 36);\n"
+"    width: 10px;\n"
+"}\n"
+"QScrollBar::handle:vertical {\n"
+"    background-color: rgb(85, 170, 255);\n"
+"}")
 
-        self.verticalLayout_3.addItem(self.verticalSpacer_5)
+        self.verticalLayout_3.addWidget(self.detail_table_tw)
 
+        self.verticalLayout_3.setStretch(0, 1)
+        self.verticalLayout_3.setStretch(1, 10)
+        self.verticalLayout_3.setStretch(2, 2)
         self.stackedWidget.addWidget(self.home_page)
         self.setting_page = QWidget()
         self.setting_page.setObjectName(u"setting_page")
-        self.horizontalLayout_15 = QHBoxLayout(self.setting_page)
-        self.horizontalLayout_15.setObjectName(u"horizontalLayout_15")
-        self.horizontalSpacer_7 = QSpacerItem(20, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_15.addItem(self.horizontalSpacer_7)
-
-        self.verticalLayout_6 = QVBoxLayout()
+        self.verticalLayout_6 = QVBoxLayout(self.setting_page)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
-        self.verticalSpacer_9 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-
-        self.verticalLayout_6.addItem(self.verticalSpacer_9)
-
         self.horizontalLayout_14 = QHBoxLayout()
         self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
+        self.horizontalLayout_14.setContentsMargins(-1, 9, -1, 9)
         self.horizontalSpacer_6 = QSpacerItem(300, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_14.addItem(self.horizontalSpacer_6)
-
-        self.table_names_cb = QComboBox(self.setting_page)
-        self.table_names_cb.setObjectName(u"table_names_cb")
-        sizePolicy.setHeightForWidth(self.table_names_cb.sizePolicy().hasHeightForWidth())
-        self.table_names_cb.setSizePolicy(sizePolicy)
-        self.table_names_cb.setMinimumSize(QSize(250, 30))
-        self.table_names_cb.setStyleSheet(u"QComboBox{\n"
-"	border: 1px solid rgb(85, 170, 255);\n"
-"	background-color: rgb(13, 9, 36);\n"
-"	color: rgb(0, 170, 255);\n"
-"}\n"
-"QComboBox QAbstractItemView {\n"
-"        color: rgb(0, 170, 255);  /* \u4e0b\u62c9\u9879\u6587\u672c\u989c\u8272 */\n"
-" }\n"
-"QComboBox QAbstractItemView::item:hover {\n"
-"        color: rgb(7, 255, 119); \n"
-"}")
-
-        self.horizontalLayout_14.addWidget(self.table_names_cb)
 
         self.search_table_bt = QPushButton(self.setting_page)
         self.search_table_bt.setObjectName(u"search_table_bt")
@@ -451,322 +453,58 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_14.addWidget(self.search_table_bt)
 
-        self.clear_table_bt = QPushButton(self.setting_page)
-        self.clear_table_bt.setObjectName(u"clear_table_bt")
-        sizePolicy.setHeightForWidth(self.clear_table_bt.sizePolicy().hasHeightForWidth())
-        self.clear_table_bt.setSizePolicy(sizePolicy)
-        self.clear_table_bt.setMinimumSize(QSize(100, 30))
-        self.clear_table_bt.setStyleSheet(u"QPushButton {\n"
-"	border: 1px solid rgb(85, 170, 255);\n"
-"	background-color: rgb(13, 9, 36);\n"
-"	border-radius: 13;\n"
-"	color: rgb(0, 170, 255);\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"	background-color: rgb(85, 0, 255);\n"
-"	color: rgb(7, 255, 119);\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"	background-color: rgb(0, 0, 0);\n"
-"}")
+        self.horizontalSpacer_8 = QSpacerItem(300, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.horizontalLayout_14.addWidget(self.clear_table_bt)
+        self.horizontalLayout_14.addItem(self.horizontalSpacer_8)
 
 
         self.verticalLayout_6.addLayout(self.horizontalLayout_14)
 
-        self.verticalSpacer_7 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-
-        self.verticalLayout_6.addItem(self.verticalSpacer_7)
-
-        self.gridLayout = QGridLayout()
-        self.gridLayout.setObjectName(u"gridLayout")
-        self.label = QLabel(self.setting_page)
-        self.label.setObjectName(u"label")
-        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy)
-        self.label.setMinimumSize(QSize(0, 30))
-        self.label.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(85, 170, 255);\n"
-"	background-color: rgb(13, 9, 36);\n"
-"	color: rgb(0, 170, 255);\n"
-"}")
-        self.label.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
-
-        self.label_2 = QLabel(self.setting_page)
-        self.label_2.setObjectName(u"label_2")
-        sizePolicy.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
-        self.label_2.setSizePolicy(sizePolicy)
-        self.label_2.setMinimumSize(QSize(0, 30))
-        self.label_2.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(85, 170, 255);\n"
-"	background-color: rgb(13, 9, 36);\n"
-"	color: rgb(0, 170, 255);\n"
-"}")
-        self.label_2.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout.addWidget(self.label_2, 0, 1, 1, 1)
-
-        self.label_3 = QLabel(self.setting_page)
-        self.label_3.setObjectName(u"label_3")
-        sizePolicy.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
-        self.label_3.setSizePolicy(sizePolicy)
-        self.label_3.setMinimumSize(QSize(0, 30))
-        self.label_3.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(85, 170, 255);\n"
-"	background-color: rgb(13, 9, 36);\n"
-"	color: rgb(0, 170, 255);\n"
-"}")
-        self.label_3.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout.addWidget(self.label_3, 0, 2, 1, 1)
-
-        self.label_5 = QLabel(self.setting_page)
-        self.label_5.setObjectName(u"label_5")
-        sizePolicy.setHeightForWidth(self.label_5.sizePolicy().hasHeightForWidth())
-        self.label_5.setSizePolicy(sizePolicy)
-        self.label_5.setMinimumSize(QSize(0, 30))
-        self.label_5.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(85, 170, 255);\n"
-"	background-color: rgb(13, 9, 36);\n"
-"	color: rgb(0, 170, 255);\n"
-"}")
-        self.label_5.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout.addWidget(self.label_5, 0, 3, 1, 1)
-
-        self.device_high_tw = QTableWidget(self.setting_page)
-        self.device_high_tw.setObjectName(u"device_high_tw")
-        self.device_high_tw.setStyleSheet(u"QTableWidget {\n"
-"    background-color: #1a1a3a;  /* \u6bd4\u7a97\u4f53\u80cc\u666f\u7a0d\u4eae\uff0c\u5f62\u6210\u5c42\u6b21\u611f */\n"
-"    color: #ffffff;             /* \u767d\u8272\u6587\u5b57\u786e\u4fdd\u53ef\u8bfb\u6027 */\n"
-"    gridline-color: #2a2a4a;    /* \u6df1\u8272\u7f51\u683c\u7ebf\uff0c\u4e0e\u80cc\u666f\u534f\u8c03 */\n"
-"    font-family: \"Microsoft YaHei\", Arial;\n"
-"    font-size: 12px;\n"
+        self.db_table_tw = QTableWidget(self.setting_page)
+        self.db_table_tw.setObjectName(u"db_table_tw")
+        self.db_table_tw.setStyleSheet(u"QTableWidget {\n"
+"    border: 1px solid rgb(85, 170, 255);\n"
+"    background-color: rgb(13, 9, 36);\n"
+"    gridline-color: rgb(85, 170, 255); /* \u8868\u683c\u7ebf\u989c\u8272 */\n"
+"    color: rgb(0, 170, 255);\n"
 "}\n"
+"\n"
 "QTableWidget::item {\n"
-"    background-color: #1a1a3a;\n"
-"    color: #ffffff;\n"
-"    border: 1px solid #2a2a4a;\n"
-"    padding: 4px;\n"
+"    color: rgb(0, 170, 255);\n"
+"    background-color: rgb(13, 9, 36);\n"
 "}\n"
+"\n"
 "QTableWidget::item:selected {\n"
-"    background-color: #3a3a5a;  /* \u9009\u4e2d\u9879\u4f7f\u7528\u7a0d\u4eae\u7684\u84dd\u8272 */\n"
-"    color: #ffffff;\n"
+"    background-color: rgba(0, 170, 255, 50); /* \u9009\u4e2d\u534a\u900f\u660e */\n"
+"    color: rgb(7, 255, 119); /* \u9009\u4e2d\u6587\u5b57\u7eff\u8272\uff08\u548c\u4f60 hover \u989c\u8272\u7edf\u4e00\uff09*/\n"
 "}\n"
+"\n"
 "QHeaderView::section {\n"
-"    background-color: #252545;  /* \u8868\u5934\u80cc\u666f\u6bd4\u8868\u683c\u7a0d\u4eae */\n"
-"    color: #ffffff;\n"
-"    padding: 6px;\n"
-"    border: 1px solid #2a2a4a;\n"
-"    font-weight: bold;\n"
+"    background-color: rgb(13, 9, 36);\n"
+"    border: 1px solid rgb(85, 170, 255);\n"
+"    color: rgb(0, 170, 255);\n"
 "}\n"
+"\n"
+"QHeaderView::section:selected {\n"
+"    color: rgb(7, 255, 119);\n"
+"}\n"
+"\n"
 "QScrollBar:vertical {\n"
-"    background-color:"
-                        " #1a1a3a;\n"
+"    background-color: rgb(13, 9, 36);\n"
 "    width: 10px;\n"
 "}\n"
 "QScrollBar::handle:vertical {\n"
-"    background-color: #4a4a6a;  /* \u6eda\u52a8\u6761\u6ed1\u5757\u989c\u8272 */\n"
-"    border-radius: 5px;\n"
-"}\n"
-"QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {\n"
-"    height: 0px;\n"
-"}\n"
-"QScrollBar:horizontal {\n"
-"    background-color: #1a1a3a;\n"
-"    height: 10px;\n"
-"}\n"
-"QScrollBar::handle:horizontal {\n"
-"    background-color: #4a4a6a;\n"
-"    border-radius: 5px;\n"
-"}\n"
-"QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {\n"
-"    width: 0px;\n"
+"    background-color: rgb(85, 170, 255);\n"
 "}")
 
-        self.gridLayout.addWidget(self.device_high_tw, 1, 0, 1, 1)
-
-        self.house_tw = QTableWidget(self.setting_page)
-        self.house_tw.setObjectName(u"house_tw")
-        self.house_tw.setStyleSheet(u"QTableWidget {\n"
-"    background-color: #1a1a3a;  /* \u6bd4\u7a97\u4f53\u80cc\u666f\u7a0d\u4eae\uff0c\u5f62\u6210\u5c42\u6b21\u611f */\n"
-"    color: #ffffff;             /* \u767d\u8272\u6587\u5b57\u786e\u4fdd\u53ef\u8bfb\u6027 */\n"
-"    gridline-color: #2a2a4a;    /* \u6df1\u8272\u7f51\u683c\u7ebf\uff0c\u4e0e\u80cc\u666f\u534f\u8c03 */\n"
-"    font-family: \"Microsoft YaHei\", Arial;\n"
-"    font-size: 12px;\n"
-"}\n"
-"QTableWidget::item {\n"
-"    background-color: #1a1a3a;\n"
-"    color: #ffffff;\n"
-"    border: 1px solid #2a2a4a;\n"
-"    padding: 4px;\n"
-"}\n"
-"QTableWidget::item:selected {\n"
-"    background-color: #3a3a5a;  /* \u9009\u4e2d\u9879\u4f7f\u7528\u7a0d\u4eae\u7684\u84dd\u8272 */\n"
-"    color: #ffffff;\n"
-"}\n"
-"QHeaderView::section {\n"
-"    background-color: #252545;  /* \u8868\u5934\u80cc\u666f\u6bd4\u8868\u683c\u7a0d\u4eae */\n"
-"    color: #ffffff;\n"
-"    padding: 6px;\n"
-"    border: 1px solid #2a2a4a;\n"
-"    font-weight: bold;\n"
-"}\n"
-"QScrollBar:vertical {\n"
-"    background-color:"
-                        " #1a1a3a;\n"
-"    width: 10px;\n"
-"}\n"
-"QScrollBar::handle:vertical {\n"
-"    background-color: #4a4a6a;  /* \u6eda\u52a8\u6761\u6ed1\u5757\u989c\u8272 */\n"
-"    border-radius: 5px;\n"
-"}\n"
-"QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {\n"
-"    height: 0px;\n"
-"}\n"
-"QScrollBar:horizontal {\n"
-"    background-color: #1a1a3a;\n"
-"    height: 10px;\n"
-"}\n"
-"QScrollBar::handle:horizontal {\n"
-"    background-color: #4a4a6a;\n"
-"    border-radius: 5px;\n"
-"}\n"
-"QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {\n"
-"    width: 0px;\n"
-"}")
-
-        self.gridLayout.addWidget(self.house_tw, 1, 1, 1, 1)
-
-        self.rack_tw = QTableWidget(self.setting_page)
-        self.rack_tw.setObjectName(u"rack_tw")
-        self.rack_tw.setStyleSheet(u"QTableWidget {\n"
-"    background-color: #1a1a3a;  /* \u6bd4\u7a97\u4f53\u80cc\u666f\u7a0d\u4eae\uff0c\u5f62\u6210\u5c42\u6b21\u611f */\n"
-"    color: #ffffff;             /* \u767d\u8272\u6587\u5b57\u786e\u4fdd\u53ef\u8bfb\u6027 */\n"
-"    gridline-color: #2a2a4a;    /* \u6df1\u8272\u7f51\u683c\u7ebf\uff0c\u4e0e\u80cc\u666f\u534f\u8c03 */\n"
-"    font-family: \"Microsoft YaHei\", Arial;\n"
-"    font-size: 12px;\n"
-"}\n"
-"QTableWidget::item {\n"
-"    background-color: #1a1a3a;\n"
-"    color: #ffffff;\n"
-"    border: 1px solid #2a2a4a;\n"
-"    padding: 4px;\n"
-"}\n"
-"QTableWidget::item:selected {\n"
-"    background-color: #3a3a5a;  /* \u9009\u4e2d\u9879\u4f7f\u7528\u7a0d\u4eae\u7684\u84dd\u8272 */\n"
-"    color: #ffffff;\n"
-"}\n"
-"QHeaderView::section {\n"
-"    background-color: #252545;  /* \u8868\u5934\u80cc\u666f\u6bd4\u8868\u683c\u7a0d\u4eae */\n"
-"    color: #ffffff;\n"
-"    padding: 6px;\n"
-"    border: 1px solid #2a2a4a;\n"
-"    font-weight: bold;\n"
-"}\n"
-"QScrollBar:vertical {\n"
-"    background-color:"
-                        " #1a1a3a;\n"
-"    width: 10px;\n"
-"}\n"
-"QScrollBar::handle:vertical {\n"
-"    background-color: #4a4a6a;  /* \u6eda\u52a8\u6761\u6ed1\u5757\u989c\u8272 */\n"
-"    border-radius: 5px;\n"
-"}\n"
-"QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {\n"
-"    height: 0px;\n"
-"}\n"
-"QScrollBar:horizontal {\n"
-"    background-color: #1a1a3a;\n"
-"    height: 10px;\n"
-"}\n"
-"QScrollBar::handle:horizontal {\n"
-"    background-color: #4a4a6a;\n"
-"    border-radius: 5px;\n"
-"}\n"
-"QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {\n"
-"    width: 0px;\n"
-"}")
-
-        self.gridLayout.addWidget(self.rack_tw, 1, 2, 1, 1)
-
-        self.net_tw = QTableWidget(self.setting_page)
-        self.net_tw.setObjectName(u"net_tw")
-        self.net_tw.setStyleSheet(u"QTableWidget {\n"
-"    background-color: #1a1a3a;  /* \u6bd4\u7a97\u4f53\u80cc\u666f\u7a0d\u4eae\uff0c\u5f62\u6210\u5c42\u6b21\u611f */\n"
-"    color: #ffffff;             /* \u767d\u8272\u6587\u5b57\u786e\u4fdd\u53ef\u8bfb\u6027 */\n"
-"    gridline-color: #2a2a4a;    /* \u6df1\u8272\u7f51\u683c\u7ebf\uff0c\u4e0e\u80cc\u666f\u534f\u8c03 */\n"
-"    font-family: \"Microsoft YaHei\", Arial;\n"
-"    font-size: 12px;\n"
-"}\n"
-"QTableWidget::item {\n"
-"    background-color: #1a1a3a;\n"
-"    color: #ffffff;\n"
-"    border: 1px solid #2a2a4a;\n"
-"    padding: 4px;\n"
-"}\n"
-"QTableWidget::item:selected {\n"
-"    background-color: #3a3a5a;  /* \u9009\u4e2d\u9879\u4f7f\u7528\u7a0d\u4eae\u7684\u84dd\u8272 */\n"
-"    color: #ffffff;\n"
-"}\n"
-"QHeaderView::section {\n"
-"    background-color: #252545;  /* \u8868\u5934\u80cc\u666f\u6bd4\u8868\u683c\u7a0d\u4eae */\n"
-"    color: #ffffff;\n"
-"    padding: 6px;\n"
-"    border: 1px solid #2a2a4a;\n"
-"    font-weight: bold;\n"
-"}\n"
-"QScrollBar:vertical {\n"
-"    background-color:"
-                        " #1a1a3a;\n"
-"    width: 10px;\n"
-"}\n"
-"QScrollBar::handle:vertical {\n"
-"    background-color: #4a4a6a;  /* \u6eda\u52a8\u6761\u6ed1\u5757\u989c\u8272 */\n"
-"    border-radius: 5px;\n"
-"}\n"
-"QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {\n"
-"    height: 0px;\n"
-"}\n"
-"QScrollBar:horizontal {\n"
-"    background-color: #1a1a3a;\n"
-"    height: 10px;\n"
-"}\n"
-"QScrollBar::handle:horizontal {\n"
-"    background-color: #4a4a6a;\n"
-"    border-radius: 5px;\n"
-"}\n"
-"QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {\n"
-"    width: 0px;\n"
-"}")
-
-        self.gridLayout.addWidget(self.net_tw, 1, 3, 1, 1)
-
-
-        self.verticalLayout_6.addLayout(self.gridLayout)
-
-        self.verticalSpacer_8 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-
-        self.verticalLayout_6.addItem(self.verticalSpacer_8)
-
-
-        self.horizontalLayout_15.addLayout(self.verticalLayout_6)
-
-        self.horizontalSpacer_8 = QSpacerItem(20, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_15.addItem(self.horizontalSpacer_8)
+        self.verticalLayout_6.addWidget(self.db_table_tw)
 
         self.stackedWidget.addWidget(self.setting_page)
         self.importFile_page = QWidget()
         self.importFile_page.setObjectName(u"importFile_page")
         self.verticalLayout_2 = QVBoxLayout(self.importFile_page)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout_2.setContentsMargins(36, -1, 36, -1)
+        self.verticalLayout_2.setContentsMargins(0, -1, 0, -1)
         self.verticalSpacer = QSpacerItem(20, 138, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout_2.addItem(self.verticalSpacer)
@@ -898,122 +636,11 @@ class Ui_MainWindow(object):
         self.cols_grid_frame.setObjectName(u"cols_grid_frame")
         self.cols_grid = QGridLayout(self.cols_grid_frame)
         self.cols_grid.setObjectName(u"cols_grid")
-        self.col1_label = QLabel(self.cols_grid_frame)
-        self.col1_label.setObjectName(u"col1_label")
+        self.col2_cb = QComboBox(self.cols_grid_frame)
+        self.col2_cb.setObjectName(u"col2_cb")
         sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.col1_label.sizePolicy().hasHeightForWidth())
-        self.col1_label.setSizePolicy(sizePolicy2)
-        self.col1_label.setMaximumSize(QSize(16777215, 30))
-        self.col1_label.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(85, 170, 255);\n"
-"	background-color: rgb(13, 9, 36);\n"
-"	color: rgb(0, 170, 255);\n"
-"}")
-        self.col1_label.setAlignment(Qt.AlignCenter)
-
-        self.cols_grid.addWidget(self.col1_label, 0, 0, 1, 1)
-
-        self.col2_label = QLabel(self.cols_grid_frame)
-        self.col2_label.setObjectName(u"col2_label")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.col2_label.sizePolicy().hasHeightForWidth())
-        self.col2_label.setSizePolicy(sizePolicy3)
-        self.col2_label.setMinimumSize(QSize(0, 30))
-        self.col2_label.setMaximumSize(QSize(16777215, 30))
-        self.col2_label.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(85, 170, 255);\n"
-"	background-color: rgb(13, 9, 36);\n"
-"	color: rgb(0, 170, 255);\n"
-"}")
-        self.col2_label.setAlignment(Qt.AlignCenter)
-
-        self.cols_grid.addWidget(self.col2_label, 0, 1, 1, 1)
-
-        self.col3_label = QLabel(self.cols_grid_frame)
-        self.col3_label.setObjectName(u"col3_label")
-        sizePolicy3.setHeightForWidth(self.col3_label.sizePolicy().hasHeightForWidth())
-        self.col3_label.setSizePolicy(sizePolicy3)
-        self.col3_label.setMinimumSize(QSize(0, 30))
-        self.col3_label.setMaximumSize(QSize(16777215, 30))
-        self.col3_label.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(85, 170, 255);\n"
-"	background-color: rgb(13, 9, 36);\n"
-"	color: rgb(0, 170, 255);\n"
-"}")
-        self.col3_label.setAlignment(Qt.AlignCenter)
-
-        self.cols_grid.addWidget(self.col3_label, 0, 2, 1, 1)
-
-        self.col3_label_2 = QLabel(self.cols_grid_frame)
-        self.col3_label_2.setObjectName(u"col3_label_2")
-        sizePolicy3.setHeightForWidth(self.col3_label_2.sizePolicy().hasHeightForWidth())
-        self.col3_label_2.setSizePolicy(sizePolicy3)
-        self.col3_label_2.setMinimumSize(QSize(0, 30))
-        self.col3_label_2.setMaximumSize(QSize(16777215, 30))
-        self.col3_label_2.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(85, 170, 255);\n"
-"	background-color: rgb(13, 9, 36);\n"
-"	color: rgb(0, 170, 255);\n"
-"}")
-        self.col3_label_2.setAlignment(Qt.AlignCenter)
-
-        self.cols_grid.addWidget(self.col3_label_2, 0, 3, 1, 1)
-
-        self.col3_label_3 = QLabel(self.cols_grid_frame)
-        self.col3_label_3.setObjectName(u"col3_label_3")
-        sizePolicy3.setHeightForWidth(self.col3_label_3.sizePolicy().hasHeightForWidth())
-        self.col3_label_3.setSizePolicy(sizePolicy3)
-        self.col3_label_3.setMinimumSize(QSize(0, 30))
-        self.col3_label_3.setMaximumSize(QSize(16777215, 30))
-        self.col3_label_3.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(85, 170, 255);\n"
-"	background-color: rgb(13, 9, 36);\n"
-"	color: rgb(0, 170, 255);\n"
-"}")
-        self.col3_label_3.setAlignment(Qt.AlignCenter)
-
-        self.cols_grid.addWidget(self.col3_label_3, 0, 4, 1, 1)
-
-        self.col3_label_4 = QLabel(self.cols_grid_frame)
-        self.col3_label_4.setObjectName(u"col3_label_4")
-        sizePolicy3.setHeightForWidth(self.col3_label_4.sizePolicy().hasHeightForWidth())
-        self.col3_label_4.setSizePolicy(sizePolicy3)
-        self.col3_label_4.setMinimumSize(QSize(0, 30))
-        self.col3_label_4.setMaximumSize(QSize(16777215, 30))
-        self.col3_label_4.setStyleSheet(u"QLabel {\n"
-"	border: 1px solid rgb(85, 170, 255);\n"
-"	background-color: rgb(13, 9, 36);\n"
-"	color: rgb(0, 170, 255);\n"
-"}")
-        self.col3_label_4.setAlignment(Qt.AlignCenter)
-
-        self.cols_grid.addWidget(self.col3_label_4, 0, 5, 1, 1)
-
-        self.col1_cb = QComboBox(self.cols_grid_frame)
-        self.col1_cb.setObjectName(u"col1_cb")
-        sizePolicy2.setHeightForWidth(self.col1_cb.sizePolicy().hasHeightForWidth())
-        self.col1_cb.setSizePolicy(sizePolicy2)
-        self.col1_cb.setMaximumSize(QSize(16777215, 30))
-        self.col1_cb.setStyleSheet(u"QComboBox{\n"
-"	border: 1px solid rgb(85, 170, 255);\n"
-"	background-color: rgb(13, 9, 36);\n"
-"	color: rgb(0, 170, 255);\n"
-"}\n"
-"QComboBox QAbstractItemView {\n"
-"        color: rgb(0, 170, 255);  /* \u4e0b\u62c9\u9879\u6587\u672c\u989c\u8272 */\n"
-" }\n"
-"QComboBox QAbstractItemView::item:hover {\n"
-"        color: rgb(7, 255, 119); \n"
-"}")
-
-        self.cols_grid.addWidget(self.col1_cb, 1, 0, 1, 1)
-
-        self.col2_cb = QComboBox(self.cols_grid_frame)
-        self.col2_cb.setObjectName(u"col2_cb")
         sizePolicy2.setHeightForWidth(self.col2_cb.sizePolicy().hasHeightForWidth())
         self.col2_cb.setSizePolicy(sizePolicy2)
         self.col2_cb.setMaximumSize(QSize(16777215, 30))
@@ -1031,45 +658,23 @@ class Ui_MainWindow(object):
 
         self.cols_grid.addWidget(self.col2_cb, 1, 1, 1, 1)
 
-        self.col3_cb = QComboBox(self.cols_grid_frame)
-        self.col3_cb.setObjectName(u"col3_cb")
-        sizePolicy3.setHeightForWidth(self.col3_cb.sizePolicy().hasHeightForWidth())
-        self.col3_cb.setSizePolicy(sizePolicy3)
-        self.col3_cb.setMinimumSize(QSize(0, 30))
-        self.col3_cb.setMaximumSize(QSize(16777215, 30))
-        self.col3_cb.setStyleSheet(u"QComboBox{\n"
+        self.col3_label_2 = QLabel(self.cols_grid_frame)
+        self.col3_label_2.setObjectName(u"col3_label_2")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.col3_label_2.sizePolicy().hasHeightForWidth())
+        self.col3_label_2.setSizePolicy(sizePolicy3)
+        self.col3_label_2.setMinimumSize(QSize(0, 30))
+        self.col3_label_2.setMaximumSize(QSize(16777215, 30))
+        self.col3_label_2.setStyleSheet(u"QLabel {\n"
 "	border: 1px solid rgb(85, 170, 255);\n"
 "	background-color: rgb(13, 9, 36);\n"
 "	color: rgb(0, 170, 255);\n"
-"}\n"
-"QComboBox QAbstractItemView {\n"
-"        color: rgb(0, 170, 255);  /* \u4e0b\u62c9\u9879\u6587\u672c\u989c\u8272 */\n"
-" }\n"
-"QComboBox QAbstractItemView::item:hover {\n"
-"        color: rgb(7, 255, 119); \n"
 "}")
+        self.col3_label_2.setAlignment(Qt.AlignCenter)
 
-        self.cols_grid.addWidget(self.col3_cb, 1, 2, 1, 1)
-
-        self.col2_cb_2 = QComboBox(self.cols_grid_frame)
-        self.col2_cb_2.setObjectName(u"col2_cb_2")
-        sizePolicy3.setHeightForWidth(self.col2_cb_2.sizePolicy().hasHeightForWidth())
-        self.col2_cb_2.setSizePolicy(sizePolicy3)
-        self.col2_cb_2.setMinimumSize(QSize(0, 30))
-        self.col2_cb_2.setMaximumSize(QSize(16777215, 30))
-        self.col2_cb_2.setStyleSheet(u"QComboBox{\n"
-"	border: 1px solid rgb(85, 170, 255);\n"
-"	background-color: rgb(13, 9, 36);\n"
-"	color: rgb(0, 170, 255);\n"
-"}\n"
-"QComboBox QAbstractItemView {\n"
-"        color: rgb(0, 170, 255);  /* \u4e0b\u62c9\u9879\u6587\u672c\u989c\u8272 */\n"
-" }\n"
-"QComboBox QAbstractItemView::item:hover {\n"
-"        color: rgb(7, 255, 119); \n"
-"}")
-
-        self.cols_grid.addWidget(self.col2_cb_2, 1, 3, 1, 1)
+        self.cols_grid.addWidget(self.col3_label_2, 0, 3, 1, 1)
 
         self.col2_cb_5 = QComboBox(self.cols_grid_frame)
         self.col2_cb_5.setObjectName(u"col2_cb_5")
@@ -1091,6 +696,70 @@ class Ui_MainWindow(object):
 
         self.cols_grid.addWidget(self.col2_cb_5, 1, 4, 1, 1)
 
+        self.col3_label_4 = QLabel(self.cols_grid_frame)
+        self.col3_label_4.setObjectName(u"col3_label_4")
+        sizePolicy3.setHeightForWidth(self.col3_label_4.sizePolicy().hasHeightForWidth())
+        self.col3_label_4.setSizePolicy(sizePolicy3)
+        self.col3_label_4.setMinimumSize(QSize(0, 30))
+        self.col3_label_4.setMaximumSize(QSize(16777215, 30))
+        self.col3_label_4.setStyleSheet(u"QLabel {\n"
+"	border: 1px solid rgb(85, 170, 255);\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"}")
+        self.col3_label_4.setAlignment(Qt.AlignCenter)
+
+        self.cols_grid.addWidget(self.col3_label_4, 0, 5, 1, 1)
+
+        self.col2_cb_2 = QComboBox(self.cols_grid_frame)
+        self.col2_cb_2.setObjectName(u"col2_cb_2")
+        sizePolicy3.setHeightForWidth(self.col2_cb_2.sizePolicy().hasHeightForWidth())
+        self.col2_cb_2.setSizePolicy(sizePolicy3)
+        self.col2_cb_2.setMinimumSize(QSize(0, 30))
+        self.col2_cb_2.setMaximumSize(QSize(16777215, 30))
+        self.col2_cb_2.setStyleSheet(u"QComboBox{\n"
+"	border: 1px solid rgb(85, 170, 255);\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"}\n"
+"QComboBox QAbstractItemView {\n"
+"        color: rgb(0, 170, 255);  /* \u4e0b\u62c9\u9879\u6587\u672c\u989c\u8272 */\n"
+" }\n"
+"QComboBox QAbstractItemView::item:hover {\n"
+"        color: rgb(7, 255, 119); \n"
+"}")
+
+        self.cols_grid.addWidget(self.col2_cb_2, 1, 3, 1, 1)
+
+        self.col1_label = QLabel(self.cols_grid_frame)
+        self.col1_label.setObjectName(u"col1_label")
+        sizePolicy2.setHeightForWidth(self.col1_label.sizePolicy().hasHeightForWidth())
+        self.col1_label.setSizePolicy(sizePolicy2)
+        self.col1_label.setMaximumSize(QSize(16777215, 30))
+        self.col1_label.setStyleSheet(u"QLabel {\n"
+"	border: 1px solid rgb(85, 170, 255);\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"}")
+        self.col1_label.setAlignment(Qt.AlignCenter)
+
+        self.cols_grid.addWidget(self.col1_label, 0, 0, 1, 1)
+
+        self.col3_label_3 = QLabel(self.cols_grid_frame)
+        self.col3_label_3.setObjectName(u"col3_label_3")
+        sizePolicy3.setHeightForWidth(self.col3_label_3.sizePolicy().hasHeightForWidth())
+        self.col3_label_3.setSizePolicy(sizePolicy3)
+        self.col3_label_3.setMinimumSize(QSize(0, 30))
+        self.col3_label_3.setMaximumSize(QSize(16777215, 30))
+        self.col3_label_3.setStyleSheet(u"QLabel {\n"
+"	border: 1px solid rgb(85, 170, 255);\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"}")
+        self.col3_label_3.setAlignment(Qt.AlignCenter)
+
+        self.cols_grid.addWidget(self.col3_label_3, 0, 4, 1, 1)
+
         self.col2_cb_6 = QComboBox(self.cols_grid_frame)
         self.col2_cb_6.setObjectName(u"col2_cb_6")
         sizePolicy3.setHeightForWidth(self.col2_cb_6.sizePolicy().hasHeightForWidth())
@@ -1110,6 +779,104 @@ class Ui_MainWindow(object):
 "}")
 
         self.cols_grid.addWidget(self.col2_cb_6, 1, 5, 1, 1)
+
+        self.col3_label = QLabel(self.cols_grid_frame)
+        self.col3_label.setObjectName(u"col3_label")
+        sizePolicy3.setHeightForWidth(self.col3_label.sizePolicy().hasHeightForWidth())
+        self.col3_label.setSizePolicy(sizePolicy3)
+        self.col3_label.setMinimumSize(QSize(0, 30))
+        self.col3_label.setMaximumSize(QSize(16777215, 30))
+        self.col3_label.setStyleSheet(u"QLabel {\n"
+"	border: 1px solid rgb(85, 170, 255);\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"}")
+        self.col3_label.setAlignment(Qt.AlignCenter)
+
+        self.cols_grid.addWidget(self.col3_label, 0, 2, 1, 1)
+
+        self.col1_cb = QComboBox(self.cols_grid_frame)
+        self.col1_cb.setObjectName(u"col1_cb")
+        sizePolicy2.setHeightForWidth(self.col1_cb.sizePolicy().hasHeightForWidth())
+        self.col1_cb.setSizePolicy(sizePolicy2)
+        self.col1_cb.setMaximumSize(QSize(16777215, 30))
+        self.col1_cb.setStyleSheet(u"QComboBox{\n"
+"	border: 1px solid rgb(85, 170, 255);\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"}\n"
+"QComboBox QAbstractItemView {\n"
+"        color: rgb(0, 170, 255);  /* \u4e0b\u62c9\u9879\u6587\u672c\u989c\u8272 */\n"
+" }\n"
+"QComboBox QAbstractItemView::item:hover {\n"
+"        color: rgb(7, 255, 119); \n"
+"}")
+
+        self.cols_grid.addWidget(self.col1_cb, 1, 0, 1, 1)
+
+        self.col3_cb = QComboBox(self.cols_grid_frame)
+        self.col3_cb.setObjectName(u"col3_cb")
+        sizePolicy3.setHeightForWidth(self.col3_cb.sizePolicy().hasHeightForWidth())
+        self.col3_cb.setSizePolicy(sizePolicy3)
+        self.col3_cb.setMinimumSize(QSize(0, 30))
+        self.col3_cb.setMaximumSize(QSize(16777215, 30))
+        self.col3_cb.setStyleSheet(u"QComboBox{\n"
+"	border: 1px solid rgb(85, 170, 255);\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"}\n"
+"QComboBox QAbstractItemView {\n"
+"        color: rgb(0, 170, 255);  /* \u4e0b\u62c9\u9879\u6587\u672c\u989c\u8272 */\n"
+" }\n"
+"QComboBox QAbstractItemView::item:hover {\n"
+"        color: rgb(7, 255, 119); \n"
+"}")
+
+        self.cols_grid.addWidget(self.col3_cb, 1, 2, 1, 1)
+
+        self.col2_label = QLabel(self.cols_grid_frame)
+        self.col2_label.setObjectName(u"col2_label")
+        sizePolicy3.setHeightForWidth(self.col2_label.sizePolicy().hasHeightForWidth())
+        self.col2_label.setSizePolicy(sizePolicy3)
+        self.col2_label.setMinimumSize(QSize(0, 30))
+        self.col2_label.setMaximumSize(QSize(16777215, 30))
+        self.col2_label.setStyleSheet(u"QLabel {\n"
+"	border: 1px solid rgb(85, 170, 255);\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"}")
+        self.col2_label.setAlignment(Qt.AlignCenter)
+
+        self.cols_grid.addWidget(self.col2_label, 0, 1, 1, 1)
+
+        self.label_10 = QLabel(self.cols_grid_frame)
+        self.label_10.setObjectName(u"label_10")
+        self.label_10.setStyleSheet(u"QLabel {\n"
+"	border: 1px solid rgb(85, 170, 255);\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"}")
+        self.label_10.setAlignment(Qt.AlignCenter)
+
+        self.cols_grid.addWidget(self.label_10, 0, 6, 1, 1)
+
+        self.comboBox = QComboBox(self.cols_grid_frame)
+        self.comboBox.setObjectName(u"comboBox")
+        self.comboBox.setMinimumSize(QSize(0, 30))
+        self.comboBox.setMaximumSize(QSize(16777215, 30))
+        self.comboBox.setStyleSheet(u"QComboBox{\n"
+"	border: 1px solid rgb(85, 170, 255);\n"
+"	background-color: rgb(13, 9, 36);\n"
+"	color: rgb(0, 170, 255);\n"
+"}\n"
+"QComboBox QAbstractItemView {\n"
+"        color: rgb(0, 170, 255);  /* \u4e0b\u62c9\u9879\u6587\u672c\u989c\u8272 */\n"
+" }\n"
+"QComboBox QAbstractItemView::item:hover {\n"
+"        color: rgb(7, 255, 119); \n"
+"}")
+
+        self.cols_grid.addWidget(self.comboBox, 1, 6, 1, 1)
 
 
         self.verticalLayout_2.addWidget(self.cols_grid_frame)
@@ -1570,7 +1337,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(2)
+        self.stackedWidget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -1583,25 +1350,21 @@ class Ui_MainWindow(object):
         self.close_bt.setText("")
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"\u6c47\u805a\u673a\u623f\u7a7a\u95f4\u5229\u7528\u7387\u7ba1\u63a7\u7cfb\u7edf", None))
         self.module_bt.setText(QCoreApplication.translate("MainWindow", u"\u6570\u636e\u66f4\u65b0", None))
-        self.setting_bt.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
+        self.setting_bt.setText(QCoreApplication.translate("MainWindow", u"\u5e93\u7ba1\u7406", None))
         self.search_percent_bt.setText(QCoreApplication.translate("MainWindow", u"\u67e5\u8be2", None))
         self.search_table_bt.setText(QCoreApplication.translate("MainWindow", u"\u8868\u67e5\u8be2", None))
-        self.clear_table_bt.setText(QCoreApplication.translate("MainWindow", u"\u6e05\u7a7a", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u5907\u9ad8\u5ea6", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"\u6c47\u805a\u673a\u623f", None))
-        self.label_3.setText(QCoreApplication.translate("MainWindow", u"\u673a\u67b6\u4f4d", None))
-        self.label_5.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u5907\u6e05\u5355", None))
         self.select_file_bt.setText(QCoreApplication.translate("MainWindow", u"\u9009\u62e9\u6587\u4ef6", None))
         self.update_db_bt.setText(QCoreApplication.translate("MainWindow", u"\u66f4\u65b0\u7f13\u5b58", None))
         self.cs_qb.setText(QCoreApplication.translate("MainWindow", u"\u4f20\u8f93", None))
         self.wx_qb.setText(QCoreApplication.translate("MainWindow", u"\u65e0\u7ebf", None))
         self.cy_qb.setText(QCoreApplication.translate("MainWindow", u"\u57ce\u57df\u7f51", None))
-        self.col1_label.setText(QCoreApplication.translate("MainWindow", u"--", None))
-        self.col2_label.setText(QCoreApplication.translate("MainWindow", u"--", None))
-        self.col3_label.setText(QCoreApplication.translate("MainWindow", u"--", None))
         self.col3_label_2.setText(QCoreApplication.translate("MainWindow", u"--", None))
-        self.col3_label_3.setText(QCoreApplication.translate("MainWindow", u"--", None))
         self.col3_label_4.setText(QCoreApplication.translate("MainWindow", u"--", None))
+        self.col1_label.setText(QCoreApplication.translate("MainWindow", u"--", None))
+        self.col3_label_3.setText(QCoreApplication.translate("MainWindow", u"--", None))
+        self.col3_label.setText(QCoreApplication.translate("MainWindow", u"--", None))
+        self.col2_label.setText(QCoreApplication.translate("MainWindow", u"--", None))
+        self.label_10.setText(QCoreApplication.translate("MainWindow", u"--", None))
         self.label_6.setText(QCoreApplication.translate("MainWindow", u"\u9884\u8b66\u95e8\u9650\u503c(%):", None))
         self.label_7.setText(QCoreApplication.translate("MainWindow", u"\u7d27\u5f20\u95e8\u9650\u503c(%):", None))
         self.search_topN_bt.setText(QCoreApplication.translate("MainWindow", u"\u73b0\u7f51\u67e5\u8be2", None))

@@ -57,8 +57,9 @@ class Mainwin(QMainWindow, Ui_MainWindow):
         self.table_df = pd.DataFrame()
         self.download_bt.clicked.connect(self.downLoadFile)
         self.setting_bt.clicked.connect(self.pageSelect)
+        # 库管理页面
         self.search_table_bt.clicked.connect(self.searchTable)
-        self.clear_table_bt.clicked.connect(self.clearDataBaseTable)
+
         # TopN 页面按钮查询
         self.topN_bt.clicked.connect(self.pageSelect)
         self.search_topN_bt.clicked.connect(self.searchTopNHouse)
@@ -180,27 +181,26 @@ class Mainwin(QMainWindow, Ui_MainWindow):
 
 
     def showTopNTable(self, topN_df):
-        topN_df = topN_df[['所属区县','机房名称','业务级别','机架数','可装设施高度','已用设施高度','利用率','利用率状态']]
+        topN_df = topN_df[['所属区县','机房名称','业务级别','机房面积','占用面积','利用率','利用率状态']]
         self.topN_tw.setRowCount(topN_df.shape[0])
         # 最后一列添加操作列，操作列为按钮，按钮绑定事件点击详情，调用searchOneHousePercent，house_name为对应列机房名称
         self.topN_tw.setColumnCount(topN_df.shape[1]+1)
-        cols = ['所属区县','机房名称','业务级别','机架数','可装设施高度','已用设施高度','利用率%','利用率状态','操作']
+        cols = ['所属区县','机房名称','业务级别','机房面积(㎡)','占用面积(㎡)','利用率%','利用率状态','操作']
         self.topN_tw.setHorizontalHeaderLabels(cols)
         # 机房名称列随内容扩展
         self.topN_tw.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
-        # 利用率状态列隐藏
-        self.topN_tw.setColumnHidden(7, True)
+        self.topN_tw.setColumnHidden(6, True)
 
         for i in range(topN_df.shape[0]):
             # 颜色
-            if topN_df.iloc[i, 7] == '已用完':
+            if topN_df.iloc[i, 6] == '已用完':
                 color = 'red'
-            elif topN_df.iloc[i, 7] == '紧张':
+            elif topN_df.iloc[i, 6] == '紧张':
                 # 橙色
                 color = 'orange'
-            elif topN_df.iloc[i, 7] == '预警':
+            elif topN_df.iloc[i, 6] == '预警':
                 color = 'yellow'
-            elif topN_df.iloc[i, 7] == '充足':
+            elif topN_df.iloc[i, 6] == '充足':
                 color = 'green'
             else:
                 # 粉红色
@@ -240,43 +240,83 @@ class Mainwin(QMainWindow, Ui_MainWindow):
         self.house_names_cb.setCurrentIndex(0)
         self.searchOneHousePercent()
 
-    def clearDataBaseTable(self):
-        table_name = self.table_names_cb.currentText()
-        if len(table_name) == 0:
-            QMessageBox.information(self, '提示', '请选择表名')
-            return;
-        # 弹窗确认
-        ret = QMessageBox.question(self, '提示', '确定清除表数据吗？')
-        if ret == QMessageBox.No:
-            return;
-        clearDataBaseTable(table_name)
-        self.showStatus('清除成功')
-
 
     # 查找数据库结构
     def searchTable(self):
         self.search_table_thread = SearchTableThread()
         self.search_table_thread.state_signal.connect(self.showStatus)
-        self.search_table_thread.table_signal.connect(self.setTableComboBox)
         self.search_table_thread.dataframe_signal.connect(self.showTableInfor)
         self.search_table_thread.start()
     
-    def setTableComboBox(self, table_names):
-        self.table_names_cb.clear()
-        self.table_names_cb.addItems(table_names)
+    def showTableInfor(self, table_df):
+        if table_df is None or table_df.empty:
+            return
+        
+        self.db_table_df = table_df
+        self.db_table_tw.setRowCount(table_df.shape[0])
+        self.db_table_tw.setColumnCount(table_df.shape[1] + 1)
+        
+        cols = table_df.columns.tolist() + ['操作']
+        self.db_table_tw.setHorizontalHeaderLabels(cols)
+        
+        for i in range(table_df.shape[0]):
+            for j in range(table_df.shape[1]):
+                self.db_table_tw.setItem(i, j, QTableWidgetItem(str(table_df.iloc[i, j])))
+            
+            widget = QWidget()
+            layout = QHBoxLayout(widget)
+            layout.setContentsMargins(0, 0, 0, 0)
+            
+            clear_btn = QPushButton('清空')
+            clear_btn.setStyleSheet("""
+                QPushButton {
+                    border: 1px solid rgb(255, 0, 0);
+                    background-color: rgb(13, 9, 36);
+                    color: rgb(255, 0, 0);
+                    border-radius: 4px;
+                    padding: 2px 8px;
+                }
+                QPushButton:hover {
+                    background-color: rgb(85, 0, 0);
+                }
+            """)
+            clear_btn.clicked.connect(lambda checked=False, row=i, table_name=table_df.iloc[i, 0]: self.onClearTable(row, table_name))
+            
+            download_btn = QPushButton('下载')
+            download_btn.setStyleSheet("""
+                QPushButton {
+                    border: 1px solid rgb(0, 170, 255);
+                    background-color: rgb(13, 9, 36);
+                    color: rgb(0, 170, 255);
+                    border-radius: 4px;
+                    padding: 2px 8px;
+                }
+                QPushButton:hover {
+                    background-color: rgb(0, 85, 170);
+                }
+            """)
+            download_btn.clicked.connect(lambda checked=False, row=i, table_name=table_df.iloc[i, 0]: self.onDownloadTable(row, table_name))
+            
+            layout.addWidget(clear_btn)
+            layout.addWidget(download_btn)
+            self.db_table_tw.setCellWidget(i, table_df.shape[1], widget)
+        
+        self.db_table_tw.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
     
-    def showTableInfor(self,device_high_table,house_table,rack_table,net_table):
-        tableWidgets = [self.device_high_tw,self.house_tw,self.rack_tw,self.net_tw]
-        dataframes = [device_high_table,house_table,rack_table,net_table]
-        for tableWidget,dataframe in zip(tableWidgets,dataframes):
-            tableWidget.setRowCount(dataframe.shape[0])
-            tableWidget.setColumnCount(dataframe.shape[1])
-            tableWidget.setHorizontalHeaderLabels(dataframe.columns)
-            for i in range(dataframe.shape[0]):
-                for j in range(dataframe.shape[1]):
-                    tableWidget.setItem(i, j, QTableWidgetItem(str(dataframe.iloc[i, j])))
-            tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-
+    def onClearTable(self, row, table_name):
+        reply = QMessageBox.question(self, '确认', f'确定要清空表 {table_name} 吗？', QMessageBox.Yes | QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.clear_thread = ClearTableThread(table_name)
+            self.clear_thread.state_signal.connect(self.showStatus)
+            self.clear_thread.finished.connect(lambda: self.searchDbTable())
+            self.clear_thread.start()
+    
+    def onDownloadTable(self, row, table_name):
+        path = QFileDialog.getSaveFileName(self, '保存文件', f'{table_name}.xlsx', 'Excel文件 (*.xlsx)')[0]
+        if path:
+            self.download_thread = DownloadTableThread(table_name, path.rsplit('/', 1)[0] if '/' in path else path.rsplit('\\', 1)[0])
+            self.download_thread.state_signal.connect(self.showStatus)
+            self.download_thread.start()
 
     # 饼状图 展示所有利用率机房分布
     def showAllPie(self, important_dict,normal_dict,business_dict,title):
@@ -322,7 +362,18 @@ class Mainwin(QMainWindow, Ui_MainWindow):
         self.query_one_house_thread.result_signal.connect(self.showOneHouseReslut)
         self.query_one_house_thread.error_signal.connect(self.showError)
         self.query_one_house_thread.percent_signal.connect(self.setPercent)
+        self.query_one_house_thread.occupied_detail_signal.connect(self.showOccupiedDetail)
         self.query_one_house_thread.start()
+
+    def showOccupiedDetail(self, df):
+        self.detail_table_tw.setRowCount(df.shape[0])
+        self.detail_table_tw.setColumnCount(df.shape[1])
+        self.detail_table_tw.setHorizontalHeaderLabels(df.columns.tolist())
+        # 扩展列宽
+        self.detail_table_tw.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        for i in range(df.shape[0]):
+            for j in range(df.shape[1]):
+                self.detail_table_tw.setItem(i, j, QTableWidgetItem(str(df.iloc[i, j])))
 
     def showOneHouseDataFrame(self, device_df,rack_df,table_df):
         self.device_df = device_df
@@ -371,7 +422,7 @@ class Mainwin(QMainWindow, Ui_MainWindow):
             self.type_frame.setVisible(False)
         self.currentCols = []
         self.currentLis = []
-        for col in range(0, 6):
+        for col in range(0, 7):
             self.cols_grid.itemAtPosition(0,col).widget().setText("- - - -")
             self.cols_grid.itemAtPosition(1,col).widget().clear()
         cols = self.fileCols[self.fileType_cb.currentIndex()]
@@ -442,11 +493,6 @@ class Mainwin(QMainWindow, Ui_MainWindow):
                 df['专业'] = '城域网'
             elif self.wx_qb.isChecked():
                 df['专业'] = '无线'
-            elif self.odf_qb.isChecked():
-                df['专业'] = '光缆'
-                df['设备型号'] = 'ODF'
-            elif self.iodf_qb.isChecked():
-                df['专业'] = 'IODF'
         self.writeDataBaseTD = writeDataBaseThread(self.fileType_cb.currentText(), df)
         self.writeDataBaseTD.state_signal.connect(self.showStatus)
         self.writeDataBaseTD.start()
